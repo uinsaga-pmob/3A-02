@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ProfilPage extends StatelessWidget {
+class ProfilPage extends StatelessWidget{
   const ProfilPage({super.key});
 
   @override
@@ -12,11 +12,14 @@ class ProfilPage extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Colors.white, Color(0xFF5FB9E3)],
-            ),
+              colors: [
+                Colors.white,
+                Color(0xFF5FB9E3),
+                ],
+              ),
           ),
         ),
-      ),
+      )
     );
   }
 }

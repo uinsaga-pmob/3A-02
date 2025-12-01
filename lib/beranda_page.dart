@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:multipage_app1/profil_page.dart';
+import 'package:app_3a_02/profil_page.dart';
 
-class BerandaPage extends StatelessWidget {
+class BerandaPage extends StatelessWidget{
   const BerandaPage({super.key});
 
   @override
@@ -15,7 +15,10 @@ class BerandaPage extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Colors.white, Color(0xFF5FB9E3)],
+              colors: [
+                Colors.white,
+                Color(0xFF5FB9E3),
+              ],
             ),
           ),
           padding: const EdgeInsets.all(16.0),
@@ -45,7 +48,7 @@ class BerandaPage extends StatelessWidget {
             ],
           ),
         ),
-      ),
+      )
     );
   }
 }

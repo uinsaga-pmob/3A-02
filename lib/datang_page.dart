@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:multipage_app1/beranda_page.dart';
+import 'package:app_3a_02/beranda_page.dart';
 
-class DatangPage extends StatelessWidget {
+class DatangPage extends StatelessWidget{
   const DatangPage({super.key});
 
   @override
@@ -15,7 +15,7 @@ class DatangPage extends StatelessWidget {
               end: Alignment.bottomCenter,
               colors: [
                 Colors.white,
-                Color(0xFF5FB9E3), // biru muda kamu
+                Color(0xFF5FB9E3),
               ],
             ),
           ),
@@ -31,8 +31,9 @@ class DatangPage extends StatelessWidget {
                   "Selamat Datang di MyDiary",
                   style: TextStyle(fontFamily: "IrishGrover", fontSize: 28),
                 ),
-
+                
                 Text(
+                  
                   "Tempatmu menulis cerita dengan tenang ^^",
                   style: TextStyle(fontFamily: "IrishGrover", fontSize: 22),
                 ),
@@ -43,7 +44,7 @@ class DatangPage extends StatelessWidget {
                       context,
                       MaterialPageRoute(builder: (context) => BerandaPage()),
                     ),
-                  },
+                  }, 
 
                   child: Text(
                     "Selanjutnya",
@@ -58,7 +59,7 @@ class DatangPage extends StatelessWidget {
             ),
           ),
         ),
-      ),
+      )
     );
   }
 }
