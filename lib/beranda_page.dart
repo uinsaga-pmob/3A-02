@@ -36,13 +36,14 @@ class BerandaPage extends StatelessWidget{
                     },
                     child: Text(
                       "Biru Samudra",
-                      style: TextStyle(
+                      style: TextStyle(   
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                         color: Colors.blue,
                       ),
                     ),
                   ),
+                  SizedBox(height: 16),
                 ],
               ),
             ],
