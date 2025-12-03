@@ -88,45 +88,59 @@ class BerandaPage extends StatelessWidget {
                   ),
                 ),
               ),
+
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () => {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => BuatPage()),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => BuatPage()),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.lightBlue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        minimumSize: Size(double.infinity, 50),
+                      ),
+                      child: Text(
+                        "Buat Diary",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
                   ),
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightBlue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadiusGeometry.circular(8),
+
+                  SizedBox(width: 12), //jarak antar tombol
+
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PerpustakaanPage(),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.lightBlue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        minimumSize: Size(double.infinity, 50),
+                      ),
+                      child: Text(
+                        "Perpustakaan",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
                   ),
-                  minimumSize: Size(double.infinity, 50),
-                ),
-                child: Text(
-                  "Buat Diary",
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () => {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => PerpustakaanPage()),
-                  ),
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightBlue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadiusGeometry.circular(8),
-                  ),
-                  minimumSize: Size(double.infinity, 50),
-                ),
-                child: Text(
-                  "Perpustakaan",
-                  style: TextStyle(color: Colors.white),
-                ),
+                ],
               ),
 
               SizedBox(height: 16),
