@@ -39,4 +39,5 @@ flutter:
          - asset: assets/fonts/FrankRuhlLibre-Light.ttf
          - asset: assets/fonts/FrankRuhlLibre-Medium.ttf
            weight: 700
+      
   

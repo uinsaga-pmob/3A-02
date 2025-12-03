@@ -29,13 +29,13 @@ class DatangPage extends StatelessWidget{
                 //text judul
                 Text(
                   "Selamat Datang di MyDiary",
-                  style: TextStyle(fontFamily: "IrishGrover", fontSize: 28),
+                  style: TextStyle(fontFamily: "IrishGrover", fontSize: 28, color: Colors.blue),
                 ),
                 
                 Text(
                   
                   "Tempatmu menulis cerita dengan tenang ^^",
-                  style: TextStyle(fontFamily: "IrishGrover", fontSize: 22),
+                  style: TextStyle(fontFamily: "IrishGrover", fontSize: 22, color: Colors.blue),
                 ),
                 SizedBox(height: 200),
                 TextButton(
@@ -51,7 +51,7 @@ class DatangPage extends StatelessWidget{
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
-                      color: Colors.black,
+                      color: Colors.blue,
                     ),
                   ),
                 ),

@@ -23,28 +23,66 @@ class BerandaPage extends StatelessWidget{
           ),
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () => {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ProfilPage()),
+
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ProfilPage()),
+                    );
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min, // agar tidak memenuhi lebar parent
+                    children: [
+                      Text(
+                        "Biru Samudra",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.blue,
+                        ),
                       ),
-                    },
-                    child: Text(
-                      "Biru Samudra",
-                      style: TextStyle(   
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        color: Colors.blue,
-                      ),
-                    ),
+                      SizedBox(width: 8),
+                      Icon(Icons.account_circle, color: Colors.blue, size: 32),
+                    ],
                   ),
-                  SizedBox(height: 16),
-                ],
+                ),
+              ),
+
+              SizedBox(height: 16),
+              Text(
+                "Hai Biru^^...",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Colors.blue,
+                ),
+              ),
+
+              SizedBox(height: 7),
+              Text(
+                "Apa yang akan kamu tulis hari ini?",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: Colors.blue,
+                ),
+              ),
+              SizedBox(height: 7),
+              TextField(
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  hintText: "Cari disini",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
               ),
             ],
           ),

@@ -30,7 +30,7 @@ class LoginPage extends StatelessWidget{
               //text judul
               Text(
                 "Masuk",
-                style: TextStyle(fontFamily: "IrishGrover", fontSize: 28),
+                style: TextStyle(fontFamily: "IrishGrover", fontSize: 28, color: Colors.blue),
               ),
               SizedBox(height: 8),
               //text desc
@@ -45,7 +45,7 @@ class LoginPage extends StatelessWidget{
                   hintText: "Email",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.blueAccent),
+                    borderSide: BorderSide.none,
                   ),
                 ),
               ),
@@ -58,7 +58,7 @@ class LoginPage extends StatelessWidget{
                   hintText: "Sandi",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.blueAccent),
+                    borderSide: BorderSide.none,
                   ),
                 ),
               ),
