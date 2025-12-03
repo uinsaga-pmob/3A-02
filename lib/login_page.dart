@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:app_3a_02/register_page.dart';
 import 'package:app_3a_02/datang_page.dart';
 
-class LoginPage extends StatelessWidget{
+class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
-  @override 
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
@@ -15,10 +15,7 @@ class LoginPage extends StatelessWidget{
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [
-                Colors.white,
-                Color(0xFF5FB9E3),
-              ],
+              colors: [Colors.white, Color(0xFF5FB9E3)],
             ),
           ),
           padding: const EdgeInsets.all(16.0),
@@ -30,7 +27,11 @@ class LoginPage extends StatelessWidget{
               //text judul
               Text(
                 "Masuk",
-                style: TextStyle(fontFamily: "IrishGrover", fontSize: 28, color: Colors.blue),
+                style: TextStyle(
+                  fontFamily: "IrishGrover",
+                  fontSize: 28,
+                  color: Colors.blue,
+                ),
               ),
               SizedBox(height: 8),
               //text desc
@@ -70,7 +71,7 @@ class LoginPage extends StatelessWidget{
                 child: TextButton(
                   onPressed: () {
                     showDialog(
-                      context: context, 
+                      context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
                           title: Row(
@@ -84,7 +85,9 @@ class LoginPage extends StatelessWidget{
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Masukkan email anda untuk menerima instruksi reset sandi."),
+                              Text(
+                                "Masukkan email anda untuk menerima instruksi reset sandi.",
+                              ),
                               SizedBox(height: 12),
                               TextField(
                                 decoration: InputDecoration(
@@ -99,33 +102,33 @@ class LoginPage extends StatelessWidget{
                           ),
                           actions: [
                             TextButton(
-                              onPressed: () => Navigator.pop(context), 
+                              onPressed: () => Navigator.pop(context),
                               child: Text("Batal"),
-                              ),
-                              ElevatedButton(
-                                onPressed: () => {
-                                  Navigator.pop(context),
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => ResetPage()),
+                            ),
+                            ElevatedButton(
+                              onPressed: () => {
+                                Navigator.pop(context),
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ResetPage(),
                                   ),
-                                }, 
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
                                 ),
-                                child: Text("Kirim", 
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                              ),
+                              child: Text(
+                                "Kirim",
+                                style: TextStyle(color: Colors.white),
                               ),
                             ),
                           ],
                         );
                       },
                     );
-                  }, 
+                  },
 
-  
                   child: Text(
                     "Lupa Sandi?",
                     style: TextStyle(
@@ -153,7 +156,6 @@ class LoginPage extends StatelessWidget{
                   ),
                   minimumSize: Size(double.infinity, 50),
                 ),
-
                 child: Text("Masuk", style: TextStyle(color: Colors.white)),
               ),
               TextButton(
