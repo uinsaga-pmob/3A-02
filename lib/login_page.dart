@@ -122,7 +122,7 @@ class LoginPage extends StatelessWidget {
                                       behavior: SnackBarBehavior.floating,
                                       backgroundColor: Colors.white,
                                       content: Text(
-                                        'Email harus diisi',
+                                        "Email harus diisi",
                                         style: TextStyle(color: Colors.blue),
                                       ),
                                     ),
@@ -168,7 +168,7 @@ class LoginPage extends StatelessWidget {
                 onPressed: () => {
                   if (emailController.text.isEmpty || passwordController.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Email dan Sandi harus diisi',
+                      SnackBar(content: Text("Email dan Sandi harus diisi",
                       style: TextStyle(color: Colors.blue),
                       ),
                       backgroundColor: Colors.white,
