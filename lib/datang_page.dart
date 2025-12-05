@@ -33,7 +33,6 @@ class DatangPage extends StatelessWidget{
                 ),
                 
                 Text(
-                  
                   "Tempatmu menulis cerita dengan tenang ^^",
                   style: TextStyle(fontFamily: "IrishGrover", fontSize: 22, color: Colors.blue),
                 ),

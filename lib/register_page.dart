@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:app_3a_02/datang_page.dart';
 
 class RegisterPage extends StatelessWidget{
-  const RegisterPage({super.key});
+  RegisterPage({super.key});
+
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -31,26 +34,29 @@ class RegisterPage extends StatelessWidget{
               //field email
               SizedBox(height: 50),
               TextField(
+                controller: emailController,
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.white,
                   hintText: "Email",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.blueAccent),
+                    borderSide: BorderSide.none,
                   ),
                 ),
               ),
               //field password
               SizedBox(height: 16),
               TextField(
+                controller: passwordController,
+                obscureText: true,
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.white,
                   hintText: "Sandi",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: Colors.blueAccent),
+                    borderSide: BorderSide.none,
                   ),
                 ),
               ),
@@ -59,10 +65,21 @@ class RegisterPage extends StatelessWidget{
               //login button
               ElevatedButton(
                 onPressed: () => {
+                  if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Email dan Sandi harus diisi',
+                      style: TextStyle(color: Colors.blue),
+                      ),
+                      backgroundColor: Colors.white,
+                      behavior: SnackBarBehavior.floating,                      
+                      ),
+                      ),
+                  } else {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => DatangPage()),
                   ),
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue[800],

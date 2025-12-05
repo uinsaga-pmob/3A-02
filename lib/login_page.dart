@@ -1,10 +1,13 @@
-import 'package:app_3a_02/reset_page.dart';
 import 'package:flutter/material.dart';
 import 'package:app_3a_02/register_page.dart';
 import 'package:app_3a_02/datang_page.dart';
+import 'package:app_3a_02/reset_page.dart';
 
 class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+  LoginPage({super.key});
+
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -21,9 +24,9 @@ class LoginPage extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              Image.asset('assets/images/mydiary.png', width: 120, height: 120),
+              Image.asset('assets/images/mydiary.png', width: 140, height: 140),
 
-              SizedBox(height: 25),
+              SizedBox(height: 20),
               //text judul
               Text(
                 "Masuk",
@@ -40,6 +43,7 @@ class LoginPage extends StatelessWidget {
               SizedBox(height: 50),
 
               TextField(
+                controller: emailController,
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.white,
@@ -53,6 +57,8 @@ class LoginPage extends StatelessWidget {
               //field password
               SizedBox(height: 16),
               TextField(
+                controller: passwordController,
+                obscureText: true,
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.white,
@@ -70,6 +76,8 @@ class LoginPage extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () {
+                    final TextEditingController resetEmailController = TextEditingController();
+
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
@@ -90,6 +98,7 @@ class LoginPage extends StatelessWidget {
                               ),
                               SizedBox(height: 12),
                               TextField(
+                                controller: resetEmailController,
                                 decoration: InputDecoration(
                                   hintText: "Masukkan email",
                                   prefixIcon: Icon(Icons.email),
@@ -107,6 +116,18 @@ class LoginPage extends StatelessWidget {
                             ),
                             ElevatedButton(
                               onPressed: () => {
+                                if (resetEmailController.text.trim().isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      behavior: SnackBarBehavior.floating,
+                                      backgroundColor: Colors.white,
+                                      content: Text(
+                                        'Email harus diisi',
+                                        style: TextStyle(color: Colors.blue),
+                                      ),
+                                    ),
+                                  ),
+                                } else {
                                 Navigator.pop(context),
                                 Navigator.push(
                                   context,
@@ -114,6 +135,7 @@ class LoginPage extends StatelessWidget {
                                     builder: (context) => ResetPage(),
                                   ),
                                 ),
+                                },
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blue,
@@ -144,10 +166,21 @@ class LoginPage extends StatelessWidget {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () => {
+                  if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Email dan Sandi harus diisi',
+                      style: TextStyle(color: Colors.blue),
+                      ),
+                      backgroundColor: Colors.white,
+                      behavior: SnackBarBehavior.floating,
+                      ),
+                      ),
+                  } else {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => DatangPage()),
                   ),
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue[800],
