@@ -6,8 +6,15 @@ import 'package:app_3a_02/perpustakaan_page.dart';
 import 'package:flutter/material.dart';
 import 'package:app_3a_02/profil_page.dart';
 
-class BerandaPage extends StatelessWidget {
+class BerandaPage extends StatefulWidget {
   const BerandaPage({super.key});
+
+  @override
+  State<BerandaPage> createState() => _BerandaPageState();
+}
+
+class _BerandaPageState extends State<BerandaPage> {
+  String query='';
 
   @override
   Widget build(BuildContext context) {
@@ -87,6 +94,11 @@ class BerandaPage extends StatelessWidget {
                     borderSide: BorderSide.none,
                   ),
                 ),
+                onChanged: (value) {
+                  setState(() {
+                    query = value.toLowerCase();
+                  });
+                },
               ),
 
               SizedBox(height: 20),
@@ -154,6 +166,7 @@ class BerandaPage extends StatelessWidget {
               ),
 
               SizedBox(height: 20),
+              if (query.isEmpty || query == "diary" || query == "1" || query.contains("diary 1"))
               ElevatedButton(
                 onPressed: () => {
                   Navigator.push(
@@ -163,7 +176,7 @@ class BerandaPage extends StatelessWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.lightBlue,
-                  shape: RoundedRectangleBorder(
+                  shape: RoundedRectangleBorder( 
                     borderRadius: BorderRadiusGeometry.circular(8),
                   ),
                   minimumSize: Size(double.infinity, 50),
@@ -172,6 +185,7 @@ class BerandaPage extends StatelessWidget {
               ),
 
               SizedBox(height: 20),
+              if(query.isEmpty || query == "diary" || query == "2" || query.contains("diary 2"))
               ElevatedButton(
                 onPressed: () => {
                   Navigator.push(
@@ -190,6 +204,7 @@ class BerandaPage extends StatelessWidget {
               ),
 
               SizedBox(height: 20),
+              if (query.isEmpty || query == "diary" || query == "3" || query.contains("diary 3"))
               ElevatedButton(
                 onPressed: () => {
                   Navigator.push(
