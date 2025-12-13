@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:app_3a_02/profil_page.dart';
-
+import 'package:app_3a_02/splashscreen_page.dart';
 
 class KeluarPage extends StatelessWidget{
   const KeluarPage({super.key});
@@ -42,7 +42,11 @@ class KeluarPage extends StatelessWidget{
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        SystemNavigator.pop();
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (_) => const SplashPage()),
+                          (route) => false,
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
