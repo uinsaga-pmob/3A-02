@@ -10,6 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  image_picker: ^1.1.0
 
   cupertino_icons: ^1.0.8
 
@@ -41,4 +42,4 @@ flutter:
          - asset: assets/fonts/FrankRuhlLibre-Medium.ttf
            weight: 700
       
-  
+   

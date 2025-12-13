@@ -1,5 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:app_3a_02/profil_page.dart';
+import 'package:image_picker/image_picker.dart';
 
 class EditPage extends StatefulWidget{
   const EditPage({super.key});
@@ -14,7 +15,8 @@ class _EditPageState extends State<EditPage> {
   final TextEditingController _bioC = TextEditingController(text: "Bahagia dengan hal-hal kecil");
   final TextEditingController _hobiC = TextEditingController(text: "Membaca, Journaling, Mendengarkan musik");
 
-  String fotoPath = "assets/images/profil.png";
+  String? fotoPath = "assets/images/profil.png";
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void dispose() {
@@ -23,6 +25,22 @@ class _EditPageState extends State<EditPage> {
     _bioC.dispose();
     _hobiC.dispose();
     super.dispose();
+  }
+
+  Future<void> _editFoto() async {
+    final XFile? picked = await _picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1024,
+      maxHeight: 1024,
+      imageQuality: 80,
+    );
+
+    if (picked != null) {
+      setState(() {
+        fotoPath = picked.path;
+        print("EditPage fotoPath $fotoPath");
+      });
+    }
   }
 
   void _simpan() {
@@ -35,7 +53,17 @@ class _EditPageState extends State<EditPage> {
     });
   }
 
-  void _editFoto() {
+  ImageProvider _buildFotoImage() {
+  if (fotoPath != null &&
+      fotoPath!.isNotEmpty &&
+      !fotoPath!.contains('assets/')) {
+    return FileImage(File(fotoPath!));
+  }
+  return const AssetImage("assets/images/profil.png");
+}
+
+
+  /* void _editFoto() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Ubah foto belum diaktifkan",
       style: TextStyle(color: Colors.blue),
@@ -44,7 +72,7 @@ class _EditPageState extends State<EditPage> {
       behavior: SnackBarBehavior.floating,
       ),
     );
-  }
+  } */
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +124,7 @@ class _EditPageState extends State<EditPage> {
                     children: [
                       CircleAvatar(
                         radius: 50,
-                        backgroundImage: AssetImage(fotoPath),
+                        backgroundImage: _buildFotoImage(),
                       ),
                       const SizedBox(height: 8),
                       const Text(

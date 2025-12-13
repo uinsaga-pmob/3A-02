@@ -1,6 +1,7 @@
+import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:app_3a_02/edit_page.dart';
 import 'package:app_3a_02/keluar_page.dart';
-import 'package:flutter/material.dart';
 
 class ProfilPage extends StatefulWidget{
   const ProfilPage({super.key});
@@ -14,12 +15,20 @@ class _ProfilPageState extends State<ProfilPage> {
   String email = "birusamudra@gmail.com";
   String bio = "Bahagia dengan hal-hal kecil";
   String hobi = "Membaca, Journaling, Mendengarkan musik";
-  String fotoPath = "assets/images/profil.png";
+  String? fotoPath = "assets/images/profil.png";
+
+  ImageProvider _buildFotoImage() {
+  if (fotoPath != null && fotoPath!.isNotEmpty && !fotoPath!.contains('assets/')) {
+    return FileImage(File(fotoPath!));
+  }
+  return const AssetImage("assets/images/profil.png");
+}
+
 
   @override
     Widget build(BuildContext context) {
       return Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -28,22 +37,43 @@ class _ProfilPageState extends State<ProfilPage> {
         ),
         child: Scaffold(
           backgroundColor: Colors.transparent,
+
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(  
+            icon: Icon(Icons.arrow_back, color: Colors.blue),
+            onPressed: () => Navigator.pop(context),
+            ),
+            title: Text(
+              "Profil",
+              style: TextStyle(
+                color: Colors.blue,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                ),
+            ),
+            centerTitle: false,
+          ),
+
           body: SafeArea(
+            child: SingleChildScrollView(
             child: SizedBox(
               width: double.infinity,        
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,   
                 crossAxisAlignment: CrossAxisAlignment.center, 
                 children: [
-                  SizedBox(height: 40),  
+                  SizedBox(height: 16),  
                   ClipOval(
-                    child: Image.asset(
-                      fotoPath,
+                    child: Image(
+                      image: _buildFotoImage(),
                       width: 80,
                       height: 80,
                       fit: BoxFit.cover,
                     ),
                   ),
+                  
                   SizedBox(height: 12),
                   Text(
                     nama,
@@ -56,9 +86,9 @@ class _ProfilPageState extends State<ProfilPage> {
                   SizedBox(height: 12),
                   TextButton(
                     onPressed: () async {
-                      final result = await Navigator.push<Map<String, String>>(
+                      final result = await Navigator.push<Map<String, dynamic>>(
                         context,
-                        MaterialPageRoute(builder: (context) =>  EditPage()),
+                        MaterialPageRoute(builder: (context) =>  const EditPage()),
                       );
 
                       if (result != null) {
@@ -68,7 +98,8 @@ class _ProfilPageState extends State<ProfilPage> {
                           bio = result["bio"] ?? bio;
                           hobi = result["hobi"] ?? hobi;
                           if (result["fotoPath"] != null) {
-                            fotoPath = result["fotoPath"]!;
+                            fotoPath = result["fotoPath"];
+                            //print("ProfilPage fotoPath: $fotoPath");
                           }
                         });
                       }
@@ -82,6 +113,7 @@ class _ProfilPageState extends State<ProfilPage> {
                       ),
                     ),
                   ),
+                  
                   SizedBox(height: 16),
                   Container(
                     width: 350,
@@ -190,7 +222,7 @@ class _ProfilPageState extends State<ProfilPage> {
                                 vertical: 10,
                               ),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadiusGeometry.circular(30),
+                                borderRadius: BorderRadius.circular(30),
                               ),
                             ),
                             child: Text(
@@ -210,6 +242,7 @@ class _ProfilPageState extends State<ProfilPage> {
             ),
           ),
         ),
-      );
-    }
+      ),
+    );
   }
+}

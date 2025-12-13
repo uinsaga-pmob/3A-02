@@ -1,10 +1,12 @@
+import 'package:app_3a_02/models/diaryitem_page.dart';
+import 'package:flutter/material.dart';
+import 'package:app_3a_02/profil_page.dart';
 import 'package:app_3a_02/buat_page.dart';
+import 'package:app_3a_02/perpustakaan_page.dart';
 import 'package:app_3a_02/diary1_page.dart';
 import 'package:app_3a_02/diary2_page.dart';
 import 'package:app_3a_02/diary3_page.dart';
-import 'package:app_3a_02/perpustakaan_page.dart';
-import 'package:flutter/material.dart';
-import 'package:app_3a_02/profil_page.dart';
+
 
 class BerandaPage extends StatefulWidget {
   const BerandaPage({super.key});
@@ -168,11 +170,20 @@ class _BerandaPageState extends State<BerandaPage> {
               SizedBox(height: 20),
               if (query.isEmpty || query == "diary" || query == "1" || query.contains("diary 1"))
               ElevatedButton(
-                onPressed: () => {
-                  Navigator.push(
+                onPressed: () async {
+                  final diary1 = DiaryItem(
+                    judul: "Diary 1", 
+                    isi: "", 
+                    tanggal: DateTime.now().subtract(const Duration(days: 1)),
+                  );
+                  final result = await Navigator.push<DiaryItem>(
                     context,
-                    MaterialPageRoute(builder: (context) => Diary1Page()),
-                  ),
+                    MaterialPageRoute(builder: (context) => Diary1Page(item: diary1),
+                    ),
+                  );
+                  if (result != null) {
+
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.lightBlue,
