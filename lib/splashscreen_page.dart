@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:app_3a_02/beranda_page.dart';
+import 'package:app_3a_02/login_page.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -16,7 +16,7 @@ class _SplashPagesState extends State<SplashPage> {
     Timer(const Duration(seconds: 5), () {
       Navigator.pushReplacement(
         context, 
-        MaterialPageRoute(builder: (_) => const BerandaPage()),
+        MaterialPageRoute(builder: (_) => LoginPage()),
         );
     });
   }
