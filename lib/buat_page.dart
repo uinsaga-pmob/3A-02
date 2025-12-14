@@ -20,12 +20,12 @@ class _BuatPageState extends State<BuatPage> {
     }
 
     final diary = DiaryItem(
-      judul: _judulC.text.isEmpty ? "Diary Baru" : _judulC.text, 
-      isi: _isiC.text, 
-      tanggal: DateTime.now(),
-      );
+      judul: _judulC.text.isEmpty ? "Diary Baru" : _judulC.text,
+      isi: _isiC.text,
+      tanggal: "Hari ini",
+    );
 
-      Navigator.pop(context, diary);
+    Navigator.pop(context, diary);
   }
 
   @override
@@ -38,22 +38,22 @@ class _BuatPageState extends State<BuatPage> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.blue),
             onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          "Buat Diary",
-          style: TextStyle(
-            color: Colors.blue,
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
           ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.check, color: Colors.blue),
-            onPressed: _simpan,
+          title: const Text(
+            "Buat Diary",
+            style: TextStyle(
+              color: Colors.blue,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.check, color: Colors.blue),
+              onPressed: _simpan,
             ),
           ],
-      ),
+        ),
         body: Container(
           width: double.infinity,
           height: double.infinity,
@@ -74,9 +74,7 @@ class _BuatPageState extends State<BuatPage> {
                     labelText: "Judul diary",
                     filled: true,
                     fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                    ),
+                    border: OutlineInputBorder(borderSide: BorderSide.none),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -89,9 +87,7 @@ class _BuatPageState extends State<BuatPage> {
                       hintText: "Tulis diary di sini...",
                       filled: true,
                       fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                      ),
+                      border: OutlineInputBorder(borderSide: BorderSide.none),
                     ),
                   ),
                 ),

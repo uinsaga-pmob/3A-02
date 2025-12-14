@@ -1,11 +1,7 @@
 class DiaryItem {
   String judul;
   String isi;
-  DateTime tanggal;
+  String tanggal;
 
-  DiaryItem({
-    required this.judul,
-    required this.isi,
-    required this.tanggal,
-  });
+  DiaryItem({required this.judul, required this.isi, required this.tanggal});
 }

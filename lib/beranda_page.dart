@@ -7,7 +7,6 @@ import 'package:app_3a_02/diary1_page.dart';
 import 'package:app_3a_02/diary2_page.dart';
 import 'package:app_3a_02/diary3_page.dart';
 
-
 class BerandaPage extends StatefulWidget {
   const BerandaPage({super.key});
 
@@ -16,7 +15,7 @@ class BerandaPage extends StatefulWidget {
 }
 
 class _BerandaPageState extends State<BerandaPage> {
-  String query='';
+  String query = '';
 
   @override
   Widget build(BuildContext context) {
@@ -168,70 +167,94 @@ class _BerandaPageState extends State<BerandaPage> {
               ),
 
               SizedBox(height: 20),
-              if (query.isEmpty || query == "diary" || query == "1" || query.contains("diary 1"))
-              ElevatedButton(
-                onPressed: () async {
-                  final diary1 = DiaryItem(
-                    judul: "Diary 1", 
-                    isi: "", 
-                    tanggal: DateTime.now().subtract(const Duration(days: 1)),
-                  );
-                  final result = await Navigator.push<DiaryItem>(
-                    context,
-                    MaterialPageRoute(builder: (context) => Diary1Page(item: diary1),
+              if (query.isEmpty ||
+                  query == "diary" ||
+                  query == "1" ||
+                  query.contains("diary 1"))
+                ElevatedButton(
+                  onPressed: () async {
+                    final diary1 = DiaryItem(
+                      judul: "Diary 1",
+                      isi: "",
+                      tanggal: "1 Hari yang lalu",
+                    );
+                    final result = await Navigator.push<DiaryItem>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Diary1Page(item: diary1),
+                      ),
+                    );
+                    if (result != null) {}
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.lightBlue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                  );
-                  if (result != null) {
-
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightBlue,
-                  shape: RoundedRectangleBorder( 
-                    borderRadius: BorderRadiusGeometry.circular(8),
+                    minimumSize: Size(double.infinity, 50),
                   ),
-                  minimumSize: Size(double.infinity, 50),
+                  child: Text("Diary 1", style: TextStyle(color: Colors.white)),
                 ),
-                child: Text("Diary 1", style: TextStyle(color: Colors.white)),
-              ),
 
               SizedBox(height: 20),
-              if(query.isEmpty || query == "diary" || query == "2" || query.contains("diary 2"))
-              ElevatedButton(
-                onPressed: () => {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Diary2Page()),
+              if (query.isEmpty ||
+                  query == "diary" ||
+                  query == "2" ||
+                  query.contains("diary 2"))
+                ElevatedButton(
+                  onPressed: () async {
+                    final diary2 = DiaryItem(
+                      judul: "Diary 2",
+                      isi: "",
+                      tanggal: "2 hari yang lalu",
+                    );
+                    final result = await Navigator.push<DiaryItem>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Diary2Page(item: diary2),
+                      ),
+                    );
+                    if (result != null) {}
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.lightBlue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    minimumSize: Size(double.infinity, 50),
                   ),
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightBlue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadiusGeometry.circular(8),
-                  ),
-                  minimumSize: Size(double.infinity, 50),
+                  child: Text("Diary 2", style: TextStyle(color: Colors.white)),
                 ),
-                child: Text("Diary 2", style: TextStyle(color: Colors.white)),
-              ),
 
               SizedBox(height: 20),
-              if (query.isEmpty || query == "diary" || query == "3" || query.contains("diary 3"))
-              ElevatedButton(
-                onPressed: () => {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Diary3Page()),
+              if (query.isEmpty ||
+                  query == "diary" ||
+                  query == "3" ||
+                  query.contains("diary 3"))
+                ElevatedButton(
+                  onPressed: () async {
+                    final diary3 = DiaryItem(
+                      judul: "Diary 3",
+                      isi: "",
+                      tanggal: "3 Hari yang lalu",
+                    );
+                    final result = await Navigator.push<DiaryItem>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Diary3Page(item: diary3),
+                      ),
+                    );
+                    if (result != null) {}
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.lightBlue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    minimumSize: Size(double.infinity, 50),
                   ),
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightBlue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadiusGeometry.circular(8),
-                  ),
-                  minimumSize: Size(double.infinity, 50),
+                  child: Text("Diary 3", style: TextStyle(color: Colors.white)),
                 ),
-                child: Text("Diary 3", style: TextStyle(color: Colors.white)),
-              ),
             ],
           ),
         ),
