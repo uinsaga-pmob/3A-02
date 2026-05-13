@@ -1,11 +1,10 @@
-import 'package:app_3a_02/models/diaryitem_page.dart';
 import 'package:flutter/material.dart';
-import 'package:app_3a_02/profil_page.dart';
 import 'package:app_3a_02/buat_page.dart';
 import 'package:app_3a_02/perpustakaan_page.dart';
 import 'package:app_3a_02/diary1_page.dart';
-import 'package:app_3a_02/diary2_page.dart';
-import 'package:app_3a_02/diary3_page.dart';
+import 'package:app_3a_02/profil_page.dart';
+import 'package:app_3a_02/models/diaryitem_page.dart';
+import 'package:app_3a_02/database/db_helper.dart';
 
 class BerandaPage extends StatefulWidget {
   const BerandaPage({super.key});
@@ -15,7 +14,94 @@ class BerandaPage extends StatefulWidget {
 }
 
 class _BerandaPageState extends State<BerandaPage> {
-  String query = '';
+  final List<DiaryItem> _riwayatDiary = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRiwayat();
+  }
+
+  Future<void> _loadRiwayat() async {
+    final data = await DBHelper.instance.getAllDiary();
+    if (!mounted) return;
+    setState(() {
+      _riwayatDiary
+        ..clear()
+        ..addAll(data);
+    });
+  }
+
+  Future<void> _bukaBuatDiary() async {
+    final hasil = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (_) => const BuatPage()),
+    );
+
+    if (hasil == true) {
+      await _loadRiwayat();
+    }
+  }
+
+  Future<void> _bukaPerpustakaan() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const PerpustakaanPage()),
+    );
+    await _loadRiwayat();
+  }
+
+  Future<void> _bukaPencarian() async {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Hubungkan ke halaman pencarian asli kamu')),
+    );
+  }
+
+  Future<void> _bukaProfil() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const ProfilPage()),
+    );
+    await _loadRiwayat();
+  }
+
+  Widget _buildCard({
+    required String judul,
+    required String tanggal,
+    required VoidCallback onTap,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          decoration: BoxDecoration(
+            color: const Color(0xFF5FB9E3),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  judul,
+                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                tanggal,
+                style: const TextStyle(color: Colors.white, fontSize: 12),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,238 +110,87 @@ class _BerandaPageState extends State<BerandaPage> {
         body: Container(
           width: double.infinity,
           height: double.infinity,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [Colors.white, Color(0xFF5FB9E3)],
             ),
           ),
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ProfilPage(),
-                      ),
-                    );
-                  },
-                  child: Row(
-                    mainAxisSize:
-                        MainAxisSize.min, // agar tidak memenuhi lebar parent
-                    children: [
-                      Text(
-                        "Biru Samudra",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: Colors.blue,
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      Icon(Icons.account_circle, color: Colors.blue, size: 32),
-                    ],
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 16),
-              Text(
-                "Hai Biru^^...",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Colors.blue,
-                ),
-              ),
-
-              SizedBox(height: 7),
-              Text(
-                "Apa yang akan kamu tulis hari ini?",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  color: Colors.blue,
-                ),
-              ),
-              SizedBox(height: 7),
-              TextField(
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  hintText: "Cari disini",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    query = value.toLowerCase();
-                  });
-                },
-              ),
-
-              SizedBox(height: 20),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => BuatPage()),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.lightBlue,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        minimumSize: Size(double.infinity, 50),
-                      ),
-                      child: Text(
-                        "Buat Diary",
-                        style: TextStyle(color: Colors.white),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: _bukaPencarian,
+                      icon: const Icon(Icons.search, color: Colors.blue),
+                    ),
+                    const Text(
+                      'Beranda',
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
+                    IconButton(
+                      onPressed: _bukaProfil,
+                      icon: const Icon(Icons.person, color: Colors.blue),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 32),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: _bukaBuatDiary,
+                    child: const Text('Buat Diary'),
                   ),
-
-                  SizedBox(width: 12), //jarak antar tombol
-
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
+                ),
+                const SizedBox(height: 12),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: _bukaPerpustakaan,
+                    child: const Text('Perpustakaan'),
+                  ),
+                ),
+                const SizedBox(height: 32),
+                const Text(
+                  'Riwayat Diary',
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                if (_riwayatDiary.isEmpty)
+                  const Text(
+                    'Belum ada riwayat diary',
+                    style: TextStyle(color: Colors.blueGrey),
+                  )
+                else
+                  for (int i = 0; i < _riwayatDiary.length; i++)
+                    _buildCard(
+                      judul: _riwayatDiary[i].judul,
+                      tanggal: _riwayatDiary[i].tanggal,
+                      onTap: () async {
+                        final hasil = await Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => PerpustakaanPage(),
+                            builder: (_) => Diary1Page(item: _riwayatDiary[i]),
                           ),
                         );
+                        if (hasil == true) {
+                          await _loadRiwayat();
+                        }
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.lightBlue,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        minimumSize: Size(double.infinity, 50),
-                      ),
-                      child: Text(
-                        "Perpustakaan",
-                        style: TextStyle(color: Colors.white),
-                      ),
                     ),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 16),
-              Text(
-                "Riwayat Diary",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Colors.blue,
-                ),
-              ),
-
-              SizedBox(height: 20),
-              if (query.isEmpty ||
-                  query == "diary" ||
-                  query == "1" ||
-                  query.contains("diary 1"))
-                ElevatedButton(
-                  onPressed: () async {
-                    final diary1 = DiaryItem(
-                      judul: "Diary 1",
-                      isi: "",
-                      tanggal: "1 Hari yang lalu",
-                    );
-                    final result = await Navigator.push<DiaryItem>(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Diary1Page(item: diary1),
-                      ),
-                    );
-                    if (result != null) {}
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.lightBlue,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    minimumSize: Size(double.infinity, 50),
-                  ),
-                  child: Text("Diary 1", style: TextStyle(color: Colors.white)),
-                ),
-
-              SizedBox(height: 20),
-              if (query.isEmpty ||
-                  query == "diary" ||
-                  query == "2" ||
-                  query.contains("diary 2"))
-                ElevatedButton(
-                  onPressed: () async {
-                    final diary2 = DiaryItem(
-                      judul: "Diary 2",
-                      isi: "",
-                      tanggal: "2 hari yang lalu",
-                    );
-                    final result = await Navigator.push<DiaryItem>(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Diary2Page(item: diary2),
-                      ),
-                    );
-                    if (result != null) {}
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.lightBlue,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    minimumSize: Size(double.infinity, 50),
-                  ),
-                  child: Text("Diary 2", style: TextStyle(color: Colors.white)),
-                ),
-
-              SizedBox(height: 20),
-              if (query.isEmpty ||
-                  query == "diary" ||
-                  query == "3" ||
-                  query.contains("diary 3"))
-                ElevatedButton(
-                  onPressed: () async {
-                    final diary3 = DiaryItem(
-                      judul: "Diary 3",
-                      isi: "",
-                      tanggal: "3 Hari yang lalu",
-                    );
-                    final result = await Navigator.push<DiaryItem>(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Diary3Page(item: diary3),
-                      ),
-                    );
-                    if (result != null) {}
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.lightBlue,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    minimumSize: Size(double.infinity, 50),
-                  ),
-                  child: Text("Diary 3", style: TextStyle(color: Colors.white)),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

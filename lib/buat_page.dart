@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:app_3a_02/beranda_page.dart';
 import 'package:app_3a_02/models/diaryitem_page.dart';
+import 'package:app_3a_02/database/db_helper.dart';
 
 class BuatPage extends StatefulWidget {
   const BuatPage({super.key});
@@ -13,19 +14,29 @@ class _BuatPageState extends State<BuatPage> {
   final TextEditingController _judulC = TextEditingController();
   final TextEditingController _isiC = TextEditingController();
 
-  void _simpan() {
-    if (_judulC.text.trim().isEmpty && _isiC.text.trim().isEmpty) {
-      Navigator.pop(context);
+  @override
+  void dispose() {
+    _judulC.dispose();
+    _isiC.dispose();
+    super.dispose();
+  }
+
+  Future<void> _simpan() async {
+    if (_judulC.text.trim().isEmpty || _isiC.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Judul dan isi tidak boleh kosong')),
+      );
       return;
     }
 
     final diary = DiaryItem(
-      judul: _judulC.text.isEmpty ? "Diary Baru" : _judulC.text,
-      isi: _isiC.text,
-      tanggal: "Hari ini",
+      judul: _judulC.text.trim(),
+      isi: _isiC.text.trim(),
+      tanggal: 'Hari ini',
     );
 
-    Navigator.pop(context, diary);
+    await DBHelper.instance.insertDiary(diary);
+    Navigator.pop(context, true);
   }
 
   @override
@@ -57,7 +68,7 @@ class _BuatPageState extends State<BuatPage> {
         body: Container(
           width: double.infinity,
           height: double.infinity,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -78,12 +89,12 @@ class _BuatPageState extends State<BuatPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-
                 Expanded(
                   child: TextField(
                     controller: _isiC,
                     maxLines: null,
-                    decoration: InputDecoration(
+                    expands: true,
+                    decoration: const InputDecoration(
                       hintText: "Tulis diary di sini...",
                       filled: true,
                       fillColor: Colors.white,

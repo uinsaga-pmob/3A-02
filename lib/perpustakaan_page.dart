@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:app_3a_02/models/diaryitem_page.dart';
 import 'package:app_3a_02/buat_page.dart';
 import 'package:app_3a_02/diary1_page.dart';
-import 'package:app_3a_02/diary2_page.dart';
-import 'package:app_3a_02/diary3_page.dart';
+import 'package:app_3a_02/models/diaryitem_page.dart';
+import 'package:app_3a_02/database/db_helper.dart';
 
 class PerpustakaanPage extends StatefulWidget {
   const PerpustakaanPage({super.key});
@@ -13,67 +12,37 @@ class PerpustakaanPage extends StatefulWidget {
 }
 
 class _PerpustakaanPageState extends State<PerpustakaanPage> {
-  // diary bawaan (Diary 1–3)
-  final List<DiaryItem> _riwayat = [
-    DiaryItem(judul: 'Diary 1', isi: '', tanggal: '1 hari yang lalu'),
-    DiaryItem(judul: 'Diary 2', isi: '', tanggal: '2 hari yang lalu'),
-    DiaryItem(judul: 'Diary 3', isi: '', tanggal: '3 hari yang lalu'),
-  ];
+  final List<DiaryItem> _diarySqlite = [];
 
-  // diary baru yang dibuat dari BuatPage
-  final List<DiaryItem> _diaryBaru = [];
+  @override
+  void initState() {
+    super.initState();
+    _loadDiary();
+  }
+
+  Future<void> _loadDiary() async {
+    final data = await DBHelper.instance.getAllDiary();
+    if (!mounted) return;
+    setState(() {
+      _diarySqlite
+        ..clear()
+        ..addAll(data);
+    });
+  }
+
+  Future<void> _hapusDiary(int id) async {
+    await DBHelper.instance.deleteDiary(id);
+    await _loadDiary();
+  }
 
   Future<void> _bukaBuatDiary() async {
-    // BuatPage sebaiknya mengembalikan DiaryItem lewat Navigator.pop(context, item);
-    final hasil = await Navigator.push<DiaryItem>(
+    final hasil = await Navigator.push<bool>(
       context,
       MaterialPageRoute(builder: (_) => const BuatPage()),
     );
 
-    if (hasil != null) {
-      setState(() {
-        _diaryBaru.insert(0, hasil);
-      });
-    }
-  }
-
-  Future<void> _bukaDiaryRiwayat(int index) async {
-    final item = _riwayat[index];
-
-    Widget page;
-    if (item.judul == 'Diary 1') {
-      page = Diary1Page(item: item);
-    } else if (item.judul == 'Diary 2') {
-      page = Diary2Page(item: item);
-    } else {
-      page = Diary3Page(item: item);
-    }
-
-    final hasil = await Navigator.push<DiaryItem>(
-      context,
-      MaterialPageRoute(builder: (_) => page),
-    );
-
-    if (hasil != null) {
-      setState(() {
-        _riwayat[index] = hasil;
-      });
-    }
-  }
-
-  Future<void> _bukaDiaryBaru(int index) async {
-    final item = _diaryBaru[index];
-
-    // bisa pakai satu halaman detail generik, di sini contoh pakai Diary1Page
-    final hasil = await Navigator.push<DiaryItem>(
-      context,
-      MaterialPageRoute(builder: (_) => Diary1Page(item: item)),
-    );
-
-    if (hasil != null) {
-      setState(() {
-        _diaryBaru[index] = hasil;
-      });
+    if (hasil == true) {
+      await _loadDiary();
     }
   }
 
@@ -81,6 +50,7 @@ class _PerpustakaanPageState extends State<PerpustakaanPage> {
     required String judul,
     required String tanggal,
     required VoidCallback onTap,
+    required VoidCallback onDelete,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -94,15 +64,20 @@ class _PerpustakaanPageState extends State<PerpustakaanPage> {
             borderRadius: BorderRadius.circular(16),
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                judul,
-                style: const TextStyle(color: Colors.white, fontSize: 16),
+              Expanded(
+                child: Text(
+                  judul,
+                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                ),
               ),
               Text(
                 tanggal,
                 style: const TextStyle(color: Colors.white, fontSize: 12),
+              ),
+              IconButton(
+                onPressed: onDelete,
+                icon: const Icon(Icons.delete, color: Colors.white),
               ),
             ],
           ),
@@ -142,7 +117,6 @@ class _PerpustakaanPageState extends State<PerpustakaanPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-
                 Center(
                   child: ElevatedButton(
                     onPressed: _bukaBuatDiary,
@@ -160,10 +134,9 @@ class _PerpustakaanPageState extends State<PerpustakaanPage> {
                     child: const Text('Buat Diary Baru'),
                   ),
                 ),
-
                 const SizedBox(height: 24),
                 const Text(
-                  'Riwayat Diary',
+                  'Diary Pengguna',
                   style: TextStyle(
                     color: Colors.blue,
                     fontSize: 16,
@@ -171,36 +144,32 @@ class _PerpustakaanPageState extends State<PerpustakaanPage> {
                   ),
                 ),
                 const SizedBox(height: 12),
-
-                for (int i = 0; i < _riwayat.length; i++)
-                  _buildCard(
-                    judul: _riwayat[i].judul,
-                    tanggal: _riwayat[i].tanggal,
-                    onTap: () => _bukaDiaryRiwayat(i),
-                  ),
-
-                const SizedBox(height: 24),
-                const Text(
-                  'Diary Baru',
-                  style: TextStyle(
-                    color: Colors.blue,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 12),
-
-                if (_diaryBaru.isEmpty)
+                if (_diarySqlite.isEmpty)
                   const Text(
-                    'Belum ada diary baru',
+                    'Belum ada diary',
                     style: TextStyle(color: Colors.blueGrey),
                   )
                 else
-                  for (int i = 0; i < _diaryBaru.length; i++)
+                  for (int i = 0; i < _diarySqlite.length; i++)
                     _buildCard(
-                      judul: _diaryBaru[i].judul,
-                      tanggal: _diaryBaru[i].tanggal,
-                      onTap: () => _bukaDiaryBaru(i),
+                      judul: _diarySqlite[i].judul,
+                      tanggal: _diarySqlite[i].tanggal,
+                      onTap: () async {
+                        final hasil = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => Diary1Page(item: _diarySqlite[i]),
+                          ),
+                        );
+                        if (hasil == true) {
+                          await _loadDiary();
+                        }
+                      },
+                      onDelete: () async {
+                        if (_diarySqlite[i].id != null) {
+                          await _hapusDiary(_diarySqlite[i].id!);
+                        }
+                      },
                     ),
               ],
             ),

@@ -1,15 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:app_3a_02/beranda_page.dart';
 import 'package:app_3a_02/models/diaryitem_page.dart';
-
-String formatSelisihHari(DateTime tanggal) {
-  final now = DateTime.now();
-  final selisih = now.difference(tanggal).inDays;
-
-  if(selisih <= 0) return "Hari ini";
-  if(selisih == 1) return "1 hari yang lalu";
-  return "$selisih hari yang lalu";
-}
+import 'package:app_3a_02/database/db_helper.dart';
 
 class Diary1Page extends StatefulWidget {
   final DiaryItem item;
@@ -31,13 +23,37 @@ class _Diary1PageState extends State<Diary1Page> {
     _isiC = TextEditingController(text: widget.item.isi);
   }
 
-  void _simpan() {
-    final updated = DiaryItem(
-      judul: _judulC.text.isEmpty ? widget.item.judul : _judulC.text, 
-      isi: _isiC.text, 
+  @override
+  void dispose() {
+    _judulC.dispose();
+    _isiC.dispose();
+    super.dispose();
+  }
+
+  Future<void> _simpan() async {
+    if (_judulC.text.trim().isEmpty || _isiC.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Judul dan isi tidak boleh kosong')),
+      );
+      return;
+    }
+
+    final updatedItem = DiaryItem(
+      id: widget.item.id,
+      judul: _judulC.text.trim(),
+      isi: _isiC.text.trim(),
       tanggal: widget.item.tanggal,
     );
-    Navigator.pop(context, updated);
+
+    await DBHelper.instance.updateDiary(updatedItem);
+    Navigator.pop(context, true);
+  }
+
+  Future<void> _hapus() async {
+    if (widget.item.id != null) {
+      await DBHelper.instance.deleteDiary(widget.item.id!);
+    }
+    Navigator.pop(context, true);
   }
 
   @override
@@ -47,43 +63,26 @@ class _Diary1PageState extends State<Diary1Page> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.blue),
-            onPressed: () => Navigator.pop(context),
-          ),
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const[
-              Text(
-                "Diary 1",
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                "1 hari yang lalu",
-                style: TextStyle(
-                  color: Colors.blueGrey,
-                  fontSize: 12,
-                ),
-              ),
-            ],
+          iconTheme: const IconThemeData(color: Colors.blue),
+          title: const Text(
+            'Detail Diary',
+            style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
           ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.check, color: Colors.blue),
+              onPressed: _hapus,
+              icon: const Icon(Icons.delete, color: Colors.red),
+            ),
+            IconButton(
               onPressed: _simpan,
+              icon: const Icon(Icons.check, color: Colors.blue),
             ),
           ],
         ),
-
         body: Container(
           width: double.infinity,
           height: double.infinity,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -93,32 +92,27 @@ class _Diary1PageState extends State<Diary1Page> {
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextField(
                   controller: _judulC,
                   decoration: const InputDecoration(
-                    labelText: "Judul Diary",
+                    labelText: "Judul diary",
                     filled: true,
                     fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                    ),
+                    border: OutlineInputBorder(borderSide: BorderSide.none),
                   ),
                 ),
                 const SizedBox(height: 16),
-
                 Expanded(
                   child: TextField(
                     controller: _isiC,
                     maxLines: null,
+                    expands: true,
                     decoration: const InputDecoration(
-                      hintText: "Tulis diary disini...",
+                      hintText: "Tulis diary di sini...",
                       filled: true,
                       fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                      )
+                      border: OutlineInputBorder(borderSide: BorderSide.none),
                     ),
                   ),
                 ),
