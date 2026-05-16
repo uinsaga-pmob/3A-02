@@ -1,3 +1,4 @@
+import 'package:app_3a_02/suka_page.dart';
 import 'package:flutter/material.dart';
 import 'package:app_3a_02/buat_page.dart';
 import 'package:app_3a_02/perpustakaan_page.dart';
@@ -15,6 +16,7 @@ class BerandaPage extends StatefulWidget {
 
 class _BerandaPageState extends State<BerandaPage> {
   final List<DiaryItem> _riwayatDiary = [];
+  int _currentIndex = 0;
 
   @override
   void initState() {
@@ -63,6 +65,13 @@ class _BerandaPageState extends State<BerandaPage> {
       MaterialPageRoute(builder: (_) => const ProfilPage()),
     );
     await _loadRiwayat();
+  }
+
+  Future<void> _bukaSuka() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const SukaPage()),
+    );
   }
 
   Widget _buildCard({
@@ -192,6 +201,38 @@ class _BerandaPageState extends State<BerandaPage> {
               ],
             ),
           ),
+        ),
+
+        // navigasi
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          currentIndex: _currentIndex,
+          selectedItemColor: Colors.lightBlue,
+          unselectedItemColor: Colors.grey,
+          onTap: (index) async {
+            setState(() {
+              _currentIndex = index;
+            });
+
+            if (index == 0) {
+              return;
+            } else if (index == 1) {
+              await _bukaSuka();
+            } else if (index == 2) {
+              await _bukaProfil();
+            }
+
+            if (!mounted) return;
+            setState(() {
+              _currentIndex = 0;
+            });
+          },
+
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: ""),
+            BottomNavigationBarItem(icon: Icon(Icons.favorite), label: ""),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: ""),
+          ],
         ),
       ),
     );
