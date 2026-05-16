@@ -3,9 +3,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:app_3a_02/models/diaryitem_page.dart';
 
 class DBHelper {
-  static final DBHelper instance = DBHelper._();
   DBHelper._();
-
+  static final DBHelper instance = DBHelper._();
   static Database? _db;
 
   Future<Database> get db async {
@@ -20,16 +19,22 @@ class DBHelper {
 
     return openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: (database, version) async {
         await database.execute('''
           CREATE TABLE diary(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             judul TEXT NOT NULL,
             isi TEXT NOT NULL,
-            tanggal TEXT NOT NULL
+            tanggal TEXT NOT NULL,
+            isFavorite INTEGER NOT NULL DEFAULT 0
           )
         ''');
+      },
+      onUpgrade: (database, oldVersion, newVersion) async {
+        await database.execute(
+          'ALTER TABLE diary ADD COLUMN isFavorite INTEGER NOT NULL DEFAULT 0',
+        );
       },
     );
   }
@@ -43,6 +48,27 @@ class DBHelper {
     final database = await db;
     final result = await database.query('diary', orderBy: 'id DESC');
     return result.map((e) => DiaryItem.fromMap(e)).toList();
+  }
+
+  Future<List<DiaryItem>> getFavoriteDiary() async {
+    final database = await db;
+    final result = await database.query(
+      'diary',
+      where: 'isFavorite = ?',
+      whereArgs: [1],
+      orderBy: 'id DESC',
+    );
+    return result.map((e) => DiaryItem.fromMap(e)).toList();
+  }
+
+  Future<int> toggleFavorite(int id, int favoriteValue) async {
+    final database = await db;
+    return database.update(
+      'diary',
+      {'isFavorite': favoriteValue},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
   Future<int> updateDiary(DiaryItem item) async {
