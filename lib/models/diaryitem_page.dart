@@ -26,9 +26,9 @@ class DiaryItem {
   factory DiaryItem.fromMap(Map<String, dynamic> map) {
     return DiaryItem(
       id: map['id'],
-      judul: map['judul'],
-      isi: map['isi'],
-      tanggal: map['tanggal'],
+      judul: map['judul'] ?? '',
+      isi: map['isi'] ?? '',
+      tanggal: map['tanggal'] ?? '',
       isFavorite: map['isFavorite'] ?? 0,
     );
   }

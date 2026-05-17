@@ -47,6 +47,7 @@ class _PerpustakaanPageState extends State<PerpustakaanPage> {
   }
 
   Widget _buildCard({
+    required DiaryItem item,
     required String judul,
     required String tanggal,
     required VoidCallback onTap,
@@ -76,6 +77,27 @@ class _PerpustakaanPageState extends State<PerpustakaanPage> {
                 style: const TextStyle(color: Colors.white, fontSize: 12),
               ),
               IconButton(
+                onPressed: () async {
+
+                  final newValue =
+                    item.isFavorite == 1 ? 0 : 1;
+
+                  await DBHelper.instance.toggleFavorite(
+                    item.id!, 
+                    newValue,
+                    );
+
+                    await _loadDiary();
+                },
+                icon: Icon(
+                  item.isFavorite == 1
+                      ? Icons.favorite
+                      : Icons.favorite_border,
+                  color: Colors.pink,
+                ),
+              ),
+              
+              IconButton(
                 onPressed: onDelete,
                 icon: const Icon(Icons.delete, color: Colors.white),
               ),
@@ -90,6 +112,15 @@ class _PerpustakaanPageState extends State<PerpustakaanPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Perpustakaan'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ),
         body: Container(
           width: double.infinity,
           height: double.infinity,
@@ -152,6 +183,7 @@ class _PerpustakaanPageState extends State<PerpustakaanPage> {
                 else
                   for (int i = 0; i < _diarySqlite.length; i++)
                     _buildCard(
+                      item: _diarySqlite[i],
                       judul: _diarySqlite[i].judul,
                       tanggal: _diarySqlite[i].tanggal,
                       onTap: () async {
@@ -166,11 +198,38 @@ class _PerpustakaanPageState extends State<PerpustakaanPage> {
                         }
                       },
                       onDelete: () async {
-                        if (_diarySqlite[i].id != null) {
-                          await _hapusDiary(_diarySqlite[i].id!);
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: const Text('Konfirmasi'),
+                              content: const Text(
+                                'Apakah diary akan dihapus?',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context, false);
+                                  }, 
+                                  child: const Text('Tidak'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context, true);
+                                    }, 
+                                    child: const Text('Ya'),
+                                    ),
+                                  ],
+                               );
+                            },
+                          );
+                          if (confirm == true) {
+                            if (_diarySqlite[i].id != null) {
+                              await _hapusDiary(_diarySqlite[i].id!);
                         }
-                      },
-                    ),
+                      }
+                    },
+                  ),  
               ],
             ),
           ),

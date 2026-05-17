@@ -2,243 +2,312 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:app_3a_02/edit_page.dart';
 import 'package:app_3a_02/keluar_page.dart';
+import 'package:app_3a_02/utils/user_prefs.dart';
 
-class ProfilPage extends StatefulWidget{
+class ProfilPage extends StatefulWidget {
   const ProfilPage({super.key});
 
   @override
-  State<ProfilPage> createState() => _ProfilPageState();
+  State<ProfilPage> createState() =>
+      _ProfilPageState();
 }
 
-class _ProfilPageState extends State<ProfilPage> {
-  String nama = "Biru Samudra";
-  String email = "birusamudra@gmail.com";
-  String bio = "Bahagia dengan hal-hal kecil";
-  String hobi = "Membaca, Journaling, Mendengarkan musik";
-  String? fotoPath = "assets/images/profil.png";
-
-  ImageProvider _buildFotoImage() {
-  if (fotoPath != null && fotoPath!.isNotEmpty && !fotoPath!.contains('assets/')) {
-    return FileImage(File(fotoPath!));
-  }
-  return const AssetImage("assets/images/profil.png");
-}
-
+class _ProfilPageState
+    extends State<ProfilPage> {
+  String nama = "";
+  String email = "";
+  String bio = "";
+  String hobi = "";
+  String? fotoPath;
 
   @override
-    Widget build(BuildContext context) {
-      return Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.white, Color(0xFF5FB9E3)],
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    final data =
+        await UserPrefs.getProfile();
+
+    if (!mounted) return;
+
+    setState(() {
+      nama = data["nama"] ?? "";
+      email = data["email"] ?? "";
+      bio = data["bio"] ?? "";
+      hobi = data["hobi"] ?? "";
+      fotoPath = data["foto"];
+    });
+  }
+
+  ImageProvider _buildFoto() {
+    if (fotoPath != null &&
+        fotoPath!.isNotEmpty &&
+        !fotoPath!.contains('assets/')) {
+      return FileImage(File(fotoPath!));
+    }
+
+    return const AssetImage(
+      "assets/images/profil.png",
+    );
+  }
+
+  Widget _buildItem(
+    String title,
+    String value,
+  ) {
+    return Column(
+      crossAxisAlignment:
+          CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 12,
           ),
         ),
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
 
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            leading: IconButton(  
-            icon: Icon(Icons.arrow_back, color: Colors.blue),
-            onPressed: () => Navigator.pop(context),
-            ),
-            title: Text(
-              "Profil",
-              style: TextStyle(
-                color: Colors.blue,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                ),
-            ),
-            centerTitle: false,
+        const SizedBox(height: 4),
+
+        Text(
+          value.isEmpty ? "-" : value,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
           ),
+        ),
 
-          body: SafeArea(
-            child: SingleChildScrollView(
-            child: SizedBox(
-              width: double.infinity,        
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,   
-                crossAxisAlignment: CrossAxisAlignment.center, 
-                children: [
-                  SizedBox(height: 16),  
-                  ClipOval(
-                    child: Image(
-                      image: _buildFotoImage(),
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
-                    ),
+        const SizedBox(height: 4),
+
+        Container(
+          height: 1,
+          color: Colors.white,
+        ),
+
+        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Future<void> _editProfil() async {
+    final result =
+        await Navigator.push<
+            Map<String, dynamic>>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => EditPage(
+          nama: nama,
+          email: email,
+          bio: bio,
+          hobi: hobi,
+          fotoPath: fotoPath,
+        ),
+      ),
+    );
+
+    if (result != null) {
+      setState(() {
+        nama = result["nama"] ?? nama;
+        email =
+            result["email"] ?? email;
+        bio = result["bio"] ?? bio;
+        hobi = result["hobi"] ?? hobi;
+        fotoPath =
+            result["fotoPath"] ??
+                fotoPath;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.white,
+            Color(0xFF5FB9E3),
+          ],
+        ),
+      ),
+
+      child: Scaffold(
+        backgroundColor:
+            Colors.transparent,
+
+        appBar: AppBar(
+          backgroundColor:
+              Colors.transparent,
+          elevation: 0,
+
+          automaticallyImplyLeading:
+              false,
+
+          centerTitle: true,
+
+          title: const Text(
+            "Profil",
+            style: TextStyle(
+              color: Colors.blue,
+              fontWeight:
+                  FontWeight.bold,
+            ),
+          ),
+        ),
+
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding:
+                const EdgeInsets.all(
+              24,
+            ),
+
+            child: Column(
+              children: [
+                CircleAvatar(
+                  radius: 45,
+                  backgroundImage:
+                      _buildFoto(),
+                ),
+
+                const SizedBox(
+                  height: 12,
+                ),
+
+                Text(
+                  nama.isEmpty
+                      ? "Belum ada nama"
+                      : nama,
+
+                  style:
+                      const TextStyle(
+                    color: Colors.blue,
+                    fontSize: 18,
+                    fontWeight:
+                        FontWeight.bold,
                   ),
-                  
-                  SizedBox(height: 12),
-                  Text(
-                    nama,
+                ),
+
+                TextButton(
+                  onPressed:
+                      _editProfil,
+
+                  child: const Text(
+                    "Edit profil",
                     style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.blue,
-                      fontWeight: FontWeight.bold,
+                      color:
+                          Colors.blue,
+                      fontWeight:
+                          FontWeight
+                              .bold,
                     ),
                   ),
-                  SizedBox(height: 12),
-                  TextButton(
-                    onPressed: () async {
-                      final result = await Navigator.push<Map<String, dynamic>>(
-                        context,
-                        MaterialPageRoute(builder: (context) =>  const EditPage()),
-                      );
+                ),
 
-                      if (result != null) {
-                        setState(() {
-                          nama = result["nama"] ?? nama;
-                          email = result["email"] ?? email;
-                          bio = result["bio"] ?? bio;
-                          hobi = result["hobi"] ?? hobi;
-                          if (result["fotoPath"] != null) {
-                            fotoPath = result["fotoPath"];
-                            //print("ProfilPage fotoPath: $fotoPath");
-                          }
-                        });
-                      }
-                    },
-                    child: Text(
-                      "Edit profil",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.blue,
-                        fontWeight: FontWeight.bold,
+                const SizedBox(
+                  height: 16,
+                ),
+
+                Container(
+                  width: double.infinity,
+
+                  padding:
+                      const EdgeInsets.all(
+                    24,
+                  ),
+
+                  decoration:
+                      BoxDecoration(
+                    color: const Color(
+                      0xFF5FB9E3,
+                    ),
+
+                    borderRadius:
+                        BorderRadius.circular(
+                      28,
+                    ),
+                  ),
+
+                  child: Column(
+                    children: [
+                      _buildItem(
+                        "Username",
+                        nama,
                       ),
-                    ),
-                  ),
-                  
-                  SizedBox(height: 16),
-                  Container(
-                    width: 350,
-                    height: 370,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 28,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Color(0xFF5FB9E3),
-                      borderRadius: BorderRadius.circular(32),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          "Username",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          nama,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Container(height: 1, color: Colors.white),
 
-                        SizedBox(height: 3),
-                        Text(
-                          "Email",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          email,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Container(height: 1, color: Colors.white),
+                      _buildItem(
+                        "Email",
+                        email,
+                      ),
 
-                        SizedBox(height: 3),
-                        Text(
-                          "Bio",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          bio,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Container(height: 1, color: Colors.white),
+                      _buildItem(
+                        "Bio",
+                        bio,
+                      ),
 
-                        SizedBox(height: 3),
-                        Text(
-                          "Hobi",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          hobi,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                          ),
-                        ),
-                        Container(height: 1, color: Colors.white),
-                        SizedBox(height: 40),
+                      _buildItem(
+                        "Hobi",
+                        hobi,
+                      ),
 
-                        Align(
-                          alignment: Alignment.center,
-                          child: ElevatedButton(
-                            onPressed: () => {
-                              Navigator.push(
-                                context, 
-                                MaterialPageRoute(builder: (context) => KeluarPage()),
-                                ),
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              elevation: 4,
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 40,
-                                vertical: 10,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (_) =>
+                                      const KeluarPage(),
                             ),
-                            child: Text(
-                              "Keluar akun",
-                              style: TextStyle(
-                                color: Color(0xFF5FB9E3),
-                                fontSize: 18,
-                              ),
+                          );
+                        },
+
+                        style:
+                            ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Colors.white,
+
+                          shape:
+                              RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(
+                              30,
                             ),
                           ),
+
+                          padding:
+                              const EdgeInsets.symmetric(
+                            horizontal:
+                                40,
+                            vertical:
+                                12,
+                          ),
                         ),
-                      ],
-                    ),
+
+                        child: const Text(
+                          "Keluar akun",
+
+                          style:
+                              TextStyle(
+                            color: Color(
+                              0xFF5FB9E3,
+                            ),
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

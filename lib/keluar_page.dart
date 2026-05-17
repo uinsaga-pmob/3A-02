@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:app_3a_02/profil_page.dart';
 import 'package:app_3a_02/splashscreen_page.dart';
 
-class KeluarPage extends StatelessWidget{
+class KeluarPage extends StatelessWidget {
   const KeluarPage({super.key});
 
   @override
@@ -11,7 +11,9 @@ class KeluarPage extends StatelessWidget{
     return SafeArea(
       child: Scaffold(
         body: Container(
-          decoration: BoxDecoration(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -21,13 +23,12 @@ class KeluarPage extends StatelessWidget{
               ],
             ),
           ),
-
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
+                const Text(
                   "Apakah kamu yakin ingin keluar?",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -35,8 +36,7 @@ class KeluarPage extends StatelessWidget{
                     color: Colors.blue,
                   ),
                 ),
-
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -44,21 +44,23 @@ class KeluarPage extends StatelessWidget{
                       onPressed: () {
                         Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (_) => const SplashPage()),
+                          MaterialPageRoute(
+                            builder: (_) => const SplashPage(),
+                          ),
                           (route) => false,
                         );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: 24,
                           vertical: 10,
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadiusGeometry.circular(20),
+                          borderRadius: BorderRadius.circular(20),
                         ),
                       ),
-                      child: Text(
+                      child: const Text(
                         "Ya",
                         style: TextStyle(
                           color: Colors.blue,
@@ -66,31 +68,29 @@ class KeluarPage extends StatelessWidget{
                         ),
                       ),
                     ),
-                SizedBox(width: 24),
-                ElevatedButton(
+                    const SizedBox(width: 24),
+                    ElevatedButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => ProfilPage()));
+                        Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: 24,
                           vertical: 10,
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadiusGeometry.circular(20),
+                          borderRadius: BorderRadius.circular(20),
                         ),
                       ),
-                      child: Text(
+                      child: const Text(
                         "Tidak",
                         style: TextStyle(
                           color: Colors.blue,
                           fontSize: 16,
                         ),
                       ),
-                    ), 
+                    ),
                   ],
                 ),
               ],

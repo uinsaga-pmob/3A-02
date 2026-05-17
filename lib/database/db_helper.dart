@@ -61,16 +61,6 @@ class DBHelper {
     return result.map((e) => DiaryItem.fromMap(e)).toList();
   }
 
-  Future<int> toggleFavorite(int id, int favoriteValue) async {
-    final database = await db;
-    return database.update(
-      'diary',
-      {'isFavorite': favoriteValue},
-      where: 'id = ?',
-      whereArgs: [id],
-    );
-  }
-
   Future<int> updateDiary(DiaryItem item) async {
     final database = await db;
     return database.update(
@@ -83,6 +73,20 @@ class DBHelper {
 
   Future<int> deleteDiary(int id) async {
     final database = await db;
-    return database.delete('diary', where: 'id = ?', whereArgs: [id]);
+    return database.delete(
+      'diary',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<int> toggleFavorite(int id, int value) async {
+    final database = await db;
+    return database.update(
+      'diary',
+      {'isFavorite': value},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 }

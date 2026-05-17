@@ -13,7 +13,12 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Container(
+        resizeToAvoidBottomInset: true,
+        body: SingleChildScrollView(
+          child: Container(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height,
+            ),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
@@ -22,7 +27,11 @@ class LoginPage extends StatelessWidget {
             ),
           ),
           padding: const EdgeInsets.all(16.0),
-          child: Column(
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: Column(
             children: [
               Image.asset('assets/images/mydiary.png', width: 140, height: 140),
 
@@ -210,6 +219,8 @@ class LoginPage extends StatelessWidget {
             ],
           ),
         ),
+        ),
+      ),
       ),
     );
   }
