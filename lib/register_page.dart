@@ -71,21 +71,21 @@ class _RegisterPageState extends State<RegisterPage> {
   }) {
     return InputDecoration(
       hintText: hint,
-      filled: true,
-      fillColor: Colors.white,
       prefixIcon: Icon(icon, color: Colors.grey),
       suffixIcon: suffixIcon,
+      filled: true,
+      fillColor: Colors.white,
       contentPadding: const EdgeInsets.symmetric(vertical: 16),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(color: Color(0xFF2F80ED)),
       ),
     );
@@ -99,26 +99,16 @@ class _RegisterPageState extends State<RegisterPage> {
 
         body: Stack(
           children: [
+            // DAUN PALING BAWAH
             Positioned(
-              bottom: 0,
+              bottom: -10,
               left: 0,
-              child: Opacity(
-                opacity: 0.9,
-                child: Image.asset("assets/images/leaf_bottom.png", width: 180),
-              ),
-            ),
-
-            Positioned(
-              bottom: 0,
               right: 0,
-              child: Transform.flip(
-                flipX: true,
-                child: Opacity(
-                  opacity: 0.9,
-                  child: Image.asset(
-                    "assets/images/leaf_bottom.png",
-                    width: 180,
-                  ),
+              child: IgnorePointer(
+                child: Image.asset(
+                  "assets/images/leaf_bottom.png",
+                  height: 270,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
@@ -139,12 +129,12 @@ class _RegisterPageState extends State<RegisterPage> {
                     icon: const Icon(Icons.arrow_back),
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
 
                   const Text(
                     "Buat Akun",
                     style: TextStyle(
-                      fontSize: 30,
+                      fontSize: 32,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF162B5B),
                     ),
@@ -154,7 +144,11 @@ class _RegisterPageState extends State<RegisterPage> {
 
                   const Text(
                     "Buat akun untuk mulai\nmenulis di MyDiary.",
-                    style: TextStyle(color: Colors.black54, height: 1.5),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black54,
+                      height: 1.5,
+                    ),
                   ),
 
                   const SizedBox(height: 32),
@@ -227,20 +221,23 @@ class _RegisterPageState extends State<RegisterPage> {
 
                   SizedBox(
                     width: double.infinity,
-                    height: 52,
+                    height: 55,
                     child: ElevatedButton(
                       onPressed: registerUser,
-
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF2F80ED),
+                        elevation: 0,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-
                       child: const Text(
                         "Daftar",
-                        style: TextStyle(color: Colors.white, fontSize: 16),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
@@ -268,7 +265,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
 
-                  const SizedBox(height: 120),
+                  const SizedBox(height: 180),
                 ],
               ),
             ),
