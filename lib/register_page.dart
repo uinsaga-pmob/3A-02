@@ -1,171 +1,278 @@
 import 'package:flutter/material.dart';
 import 'package:app_3a_02/database/db_helper.dart';
 
-class RegisterPage extends StatelessWidget {
-  RegisterPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
-  final TextEditingController emailController = TextEditingController();
+  @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
 
-  final TextEditingController passwordController = TextEditingController();
+class _RegisterPageState extends State<RegisterPage> {
+  final namaController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+
+  bool hidePassword = true;
+  bool hideConfirmPassword = true;
+
+  @override
+  void dispose() {
+    namaController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> registerUser() async {
+    if (namaController.text.trim().isEmpty ||
+        emailController.text.trim().isEmpty ||
+        passwordController.text.trim().isEmpty ||
+        confirmPasswordController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Semua field harus diisi")));
+      return;
+    }
+
+    if (passwordController.text != confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Konfirmasi password tidak sesuai")),
+      );
+      return;
+    }
+
+    try {
+      await DBHelper.instance.registerUser(
+        emailController.text.trim(),
+        passwordController.text.trim(),
+      );
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Akun berhasil dibuat")));
+
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Email sudah digunakan")));
+    }
+  }
+
+  InputDecoration customInput({
+    required String hint,
+    required IconData icon,
+    Widget? suffixIcon,
+  }) {
+    return InputDecoration(
+      hintText: hint,
+      filled: true,
+      fillColor: Colors.white,
+      prefixIcon: Icon(icon, color: Colors.grey),
+      suffixIcon: suffixIcon,
+      contentPadding: const EdgeInsets.symmetric(vertical: 16),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Color(0xFF2F80ED)),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Colors.white, Color(0xFF5FB9E3)],
+        backgroundColor: Colors.white,
+
+        body: Stack(
+          children: [
+            Positioned(
+              bottom: 0,
+              left: 0,
+              child: Opacity(
+                opacity: 0.9,
+                child: Image.asset("assets/images/leaf_bottom.png", width: 180),
+              ),
             ),
-          ),
 
-          padding: const EdgeInsets.all(16.0),
-
-          child: Column(
-            children: [
-              SizedBox(height: 100),
-
-              // JUDUL
-              Text(
-                "Buat Akun",
-                style: TextStyle(fontFamily: "IrishGrover", fontSize: 30),
-              ),
-
-              // FIELD EMAIL
-              SizedBox(height: 50),
-
-              TextField(
-                controller: emailController,
-
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  hintText: "Email",
-
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide.none,
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: Transform.flip(
+                flipX: true,
+                child: Opacity(
+                  opacity: 0.9,
+                  child: Image.asset(
+                    "assets/images/leaf_bottom.png",
+                    width: 180,
                   ),
                 ),
               ),
+            ),
 
-              // FIELD PASSWORD
-              SizedBox(height: 16),
+            SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
 
-              TextField(
-                controller: passwordController,
-                obscureText: true,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
 
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  hintText: "Sandi",
-
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
-
-              // BUTTON REGISTER
-              SizedBox(height: 20),
-
-              ElevatedButton(
-                onPressed: () async {
-                  if (emailController.text.isEmpty ||
-                      passwordController.text.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          "Email dan Sandi harus diisi",
-                          style: TextStyle(color: Colors.blue),
-                        ),
-
-                        backgroundColor: Colors.white,
-
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                  } else {
-                    try {
-                      await DBHelper.instance.registerUser(
-                        emailController.text.trim(),
-                        passwordController.text.trim(),
-                      );
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            "Akun berhasil dibuat",
-                            style: TextStyle(color: Colors.blue),
-                          ),
-
-                          backgroundColor: Colors.white,
-
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-
+                children: [
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    onPressed: () {
                       Navigator.pop(context);
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            "Email sudah digunakan",
-                            style: TextStyle(color: Colors.blue),
-                          ),
-
-                          backgroundColor: Colors.white,
-
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-                    }
-                  }
-                },
-
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue[800],
-
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    },
+                    icon: const Icon(Icons.arrow_back),
                   ),
 
-                  minimumSize: Size(double.infinity, 50),
-                ),
+                  const SizedBox(height: 20),
 
-                child: Text("Daftar", style: TextStyle(color: Colors.white)),
-              ),
+                  const Text(
+                    "Buat Akun",
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF162B5B),
+                    ),
+                  ),
 
-              // BUTTON KEMBALI
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+                  const SizedBox(height: 8),
 
-                child: Row(
-                  children: [
-                    Icon(Icons.arrow_back),
+                  const Text(
+                    "Buat akun untuk mulai\nmenulis di MyDiary.",
+                    style: TextStyle(color: Colors.black54, height: 1.5),
+                  ),
 
-                    SizedBox(width: 8),
+                  const SizedBox(height: 32),
 
-                    Text(
-                      "Kembali ke halaman login",
+                  TextField(
+                    controller: namaController,
+                    decoration: customInput(
+                      hint: "Nama Lengkap",
+                      icon: Icons.person_outline,
+                    ),
+                  ),
 
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        color: Colors.blue,
+                  const SizedBox(height: 16),
+
+                  TextField(
+                    controller: emailController,
+                    decoration: customInput(
+                      hint: "Email",
+                      icon: Icons.email_outlined,
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  TextField(
+                    controller: passwordController,
+                    obscureText: hidePassword,
+                    decoration: customInput(
+                      hint: "Password",
+                      icon: Icons.lock_outline,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          hidePassword
+                              ? Icons.visibility_off_outlined
+                              : Icons.visibility_outlined,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            hidePassword = !hidePassword;
+                          });
+                        },
                       ),
                     ),
-                  ],
-                ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  TextField(
+                    controller: confirmPasswordController,
+                    obscureText: hideConfirmPassword,
+                    decoration: customInput(
+                      hint: "Konfirmasi Password",
+                      icon: Icons.lock_outline,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          hideConfirmPassword
+                              ? Icons.visibility_off_outlined
+                              : Icons.visibility_outlined,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            hideConfirmPassword = !hideConfirmPassword;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: ElevatedButton(
+                      onPressed: registerUser,
+
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF2F80ED),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+
+                      child: const Text(
+                        "Daftar",
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text("Sudah punya akun? "),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            "Masuk",
+                            style: TextStyle(
+                              color: Color(0xFF2F80ED),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 120),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
