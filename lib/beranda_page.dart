@@ -1,12 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:app_3a_02/buat_page.dart';
-import 'package:app_3a_02/perpustakaan_page.dart';
 import 'package:app_3a_02/diary1_page.dart';
-import 'package:app_3a_02/profil_page.dart';
-import 'package:app_3a_02/suka_page.dart';
-import 'package:app_3a_02/models/diaryitem_page.dart';
+import 'package:flutter/material.dart';
 import 'package:app_3a_02/database/db_helper.dart';
-import 'package:app_3a_02/utils/user_prefs.dart';
+import 'package:app_3a_02/models/diaryitem_page.dart';
+import 'package:app_3a_02/diary1_page.dart';
 
 class BerandaPage extends StatefulWidget {
   const BerandaPage({super.key});
@@ -16,360 +13,350 @@ class BerandaPage extends StatefulWidget {
 }
 
 class _BerandaPageState extends State<BerandaPage> {
-  final List<DiaryItem> _riwayatDiary = [];
 
-  final TextEditingController _cariC =
-      TextEditingController();
+  List<DiaryItem> diaries = [];
 
-  List<DiaryItem> _hasilCari = [];
-
-  int _currentIndex = 0;
-
-  String _nama = '';
+  int totalDiary = 0;
+  int totalFavorite = 0;
 
   @override
   void initState() {
     super.initState();
-    _loadData();
+    loadData();
   }
 
-  Future<void> _loadData() async {
-    await _loadRiwayat();
+  Future<void> loadData() async {
 
-    final nama = await UserPrefs.getName();
-
-    if (!mounted) return;
+    final data =
+        await DBHelper.instance.getAllDiary();
 
     setState(() {
-      _nama = nama;
+      diaries = data;
+      totalDiary = data.length;
+      totalFavorite = data
+          .where((e) => e.isFavorite == 1)
+          .length;
     });
   }
 
-  Future<void> _refreshNama() async {
-    final nama =
-        await UserPrefs.getName();
-
-    if (!mounted) return;
-
-    setState(() {
-      _nama = nama;
-    });
-  }
-
-  Future<void> _loadRiwayat() async {
-    final data = await DBHelper.instance.getAllDiary();
-
-    if (!mounted) return;
-
-    setState(() {
-      _riwayatDiary
-        ..clear()
-        ..addAll(data);
-
-      _hasilCari = List.from(data);
-    });
-  }
-
-  void _cariDiary(String keyword) {
-    final hasil = _riwayatDiary.where((item) {
-      return item.judul
-          .toLowerCase()
-          .contains(keyword.toLowerCase());
-    }).toList();
-
-    setState(() {
-      _hasilCari = hasil;
-    });
-  }
-
-  Future<void> _bukaBuatDiary() async {
-    final hasil = await Navigator.push<bool>(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const BuatPage(),
-      ),
-    );
-
-    if (hasil == true) {
-      await _loadData();
-    }
-  }
-
-  Future<void> _bukaPerpustakaan() async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const PerpustakaanPage(),
-      ),
-    );
-
-    await _loadData();
-  }
-
-  Widget _buildCard({
-    required String judul,
-    required String tanggal,
-    required VoidCallback onTap,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 16,
-          ),
-          decoration: BoxDecoration(
-            color: const Color(0xFF5FB9E3),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Text(
-                  judul,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                  overflow: TextOverflow.ellipsis,
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: const Color(
+      0xFFF7F9FC,
+    ),
+    body: SafeArea(
+      child: Column(
+        children: [
+          buildAppBar(),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: loadData,
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    buildGreetingCard(),
+                    const SizedBox(height: 15),
+                    buildStatistics(),
+                    const SizedBox(height: 20),
+                    buildTitle(),
+                    const SizedBox(height: 12),
+                    buildDiaryList(),
+                  ],
                 ),
               ),
+            ),
+          ),
+        ],
+      ),
+    ),
 
-              const SizedBox(width: 12),
+    bottomNavigationBar:
+        buildBottomNavigation(),
 
-              Text(
-                tanggal,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                ),
-              ),
-            ],
+    floatingActionButton:
+        FloatingActionButton(
+      backgroundColor:
+          const Color(0xFF2F80ED),
+      onPressed: () async {
+
+        final result =
+            await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) =>
+                const BuatPage(),
+          ),
+        );
+
+        if (result == true) {
+          loadData();
+        }
+      },
+      child: const Icon(
+        Icons.add,
+        color: Colors.white,
+      ),
+    ),
+
+    floatingActionButtonLocation:
+        FloatingActionButtonLocation
+            .centerDocked,
+  );
+}
+
+Widget buildAppBar() {
+  return Padding(
+    padding: const EdgeInsets.all(16),
+    child: Row(
+      children: [
+        const Icon(Icons.menu),
+        const Spacer(),
+        const Text(
+          "Beranda",
+          style: TextStyle(
+            fontWeight:
+                FontWeight.bold,
+            fontSize: 18,
           ),
         ),
-      ),
-    );
-  }
 
-  Widget _buildHome() {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Colors.white,
-            Color(0xFF5FB9E3),
-          ],
+        const Spacer(),
+        const Icon(
+          Icons.notifications_none,
         ),
+      ],
+    ),
+  );
+}
+
+Widget buildGreetingCard() {
+  return Container(
+    height: 120,
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      borderRadius:
+          BorderRadius.circular(20),
+      gradient: const LinearGradient(
+
+        colors: [
+          Color(0xFF2F80ED),
+          Color(0xFF4A90E2),
+        ],
       ),
-      child: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+    ),
+    child: Row(
+      children: [
+        const Expanded(
           child: Column(
             crossAxisAlignment:
                 CrossAxisAlignment.start,
+            mainAxisAlignment:
+                MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 24),
-
-              Center(
-                child: Text(
-                  _nama.isEmpty
-                      ? "Pengguna"
-                      : _nama,
-                  style: const TextStyle(
-                    color: Color(0xFF2C8FCA),
-                    fontSize: 22,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 6),
-
               Text(
-                _nama.isEmpty
-                    ? 'Hai,'
-                    : 'Hai ${_nama.split(' ').first},',
-                style: const TextStyle(
-                  color: Color(0xFF2C8FCA),
-                  fontSize: 14,
-                ),
-              ),
-
-              const Text(
-                'apa yang akan kamu tulis hari ini?',
+                "Halo 👋",
                 style: TextStyle(
-                  color: Color(0xFF2C8FCA),
-                  fontSize: 14,
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              Container(
-                width: double.infinity,
-                height: 42,
-                decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius:
-                      BorderRadius.circular(18),
-                ),
-                child: TextField(
-                  controller: _cariC,
-                  onChanged: _cariDiary,
-                  textAlign: TextAlign.center,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'Cari Di Sini',
-                    hintStyle: TextStyle(
-                      color: Colors.blueGrey,
-                      fontSize: 14,
-                    ),
-                    contentPadding:
-                        EdgeInsets.symmetric(
-                      vertical: 10,
-                    ),
-                  ),
+                  fontSize: 18,
                 ),
               ),
-
-              const SizedBox(height: 36),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                      height: 54,
-                      child: ElevatedButton(
-                        onPressed:
-                            _bukaBuatDiary,
-                        child: const Text(
-                          'Buat Diary Baru',
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(width: 14),
-
-                  Expanded(
-                    child: SizedBox(
-                      height: 54,
-                      child: ElevatedButton(
-                        onPressed:
-                            _bukaPerpustakaan,
-                        child: const Text(
-                          'Perpustakaan',
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 30),
-
-              const Text(
-                'Riwayat Diary',
+              SizedBox(height: 8),
+              Text(
+                "Apa kabar hari ini?",
                 style: TextStyle(
-                  color: Color(0xFF2B87BD),
-                  fontSize: 14,
+                  color: Colors.white70,
                 ),
               ),
-
-              const SizedBox(height: 12),
-
-              if (_hasilCari.isEmpty)
-                const Text(
-                  'Diary tidak ditemukan',
-                  style: TextStyle(
-                    color: Colors.blueGrey,
-                  ),
-                )
-              else
-                for (int i = 0;
-                    i < _hasilCari.length;
-                    i++)
-                  _buildCard(
-                    judul:
-                        _hasilCari[i].judul,
-                    tanggal:
-                        _hasilCari[i].tanggal,
-                    onTap: () async {
-                      final hasil =
-                          await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              Diary1Page(
-                            item:
-                                _hasilCari[i],
-                          ),
-                        ),
-                      );
-
-                      if (hasil == true) {
-                        await _loadData();
-                      }
-                    },
-                  ),
             ],
           ),
         ),
+
+        Image.asset(
+          "assets/images/mydiary.png",
+          width: 90,
+        ),
+      ],
+    ),
+  );
+}
+
+Widget buildStatistics() {
+  return Row(
+    children: [
+      Expanded(
+        child: statCard(
+          totalDiary.toString(),
+          "Total Diary",
+        ),
+      ),
+      const SizedBox(width: 10),
+      Expanded(
+        child: statCard(
+          "12",
+          "Hari Beruntun",
+        ),
+      ),
+      const SizedBox(width: 10),
+      Expanded(
+        child: statCard(
+          totalFavorite.toString(),
+          "Favorit",
+        ),
+      ),
+    ],
+  );
+}
+
+Widget statCard(
+  String value,
+  String label,
+) {
+  return Container(
+    padding:
+        const EdgeInsets.symmetric(
+      vertical: 15,
+    ),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius:
+          BorderRadius.circular(15),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black12,
+          blurRadius: 4,
+        ),
+      ],
+    ),
+    child: Column(
+      children: [
+        Text(
+          value,
+          style: const TextStyle(
+            fontWeight:
+                FontWeight.bold,
+            fontSize: 20,
+            color:
+                Color(0xFF2F80ED),
+          ),
+        ),
+        const SizedBox(height: 5),
+        Text(label),
+      ],
+    ),
+  );
+}
+
+Widget buildTitle() {
+  return Row(
+    children: [
+      const Text(
+        "Diary Terbaru",
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight:
+              FontWeight.bold,
+        ),
+      ),
+      const Spacer(),
+      TextButton(
+        onPressed: () {},
+        child: const Text(
+          "Lihat semua",
+        ),
+      ),
+    ],
+  );
+}
+
+Widget buildDiaryList() {
+  if (diaries.isEmpty) {
+    return Container(
+      height: 150,
+      alignment: Alignment.center,
+      child: const Text(
+        "Belum ada diary",
       ),
     );
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: [
-          _buildHome(),
-          const SukaPage(),
-          
-          ProfilPage(
-            key: UniqueKey(),
+  return Column(
+    children: diaries.map((item) {
+      return Container(
+        margin:
+            const EdgeInsets.only(
+          bottom: 10,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius:
+              BorderRadius.circular(
+            15,
           ),
+        ),
+
+        child: ListTile(
+          onTap: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => Diary1Page(
+                  diary: item,
+                ),
+              ),
+            );
+            loadData();
+          },
+
+          leading: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.asset(
+              "assets/images/diary.jpg",
+              width: 55,
+              height: 55,
+              fit: BoxFit.cover,
+            ),
+          ),
+
+          title: Text(item.judul),
+
+          subtitle: Text(
+            item.isi,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+
+          trailing: Icon(
+            item.isFavorite == 1
+                ? Icons.star
+                : Icons.star_border,
+            color: Colors.amber,
+          ),
+        ),
+      );
+    }).toList(),
+  );
+}
+
+Widget buildBottomNavigation() {
+  return BottomAppBar(
+    shape:
+        const CircularNotchedRectangle(),
+    child: SizedBox(
+      height: 65,
+      child: Row(
+        mainAxisAlignment:
+            MainAxisAlignment.spaceAround,
+        children: const [
+          Icon(Icons.home_outlined),
+          Icon(Icons.favorite_border),
+          SizedBox(width: 40),
+          Icon(Icons.menu_book_outlined),
+          Icon(Icons.person_outline),
         ],
       ),
-
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _currentIndex,
-        selectedItemColor: Colors.lightBlue,
-        unselectedItemColor: Colors.grey,
-        onTap: (index) async {
-          setState(() {
-            _currentIndex = index;
-          });
-
-          await _refreshNama();
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: '',
-          ),
-        ],
-      ),
-    );
-  }
+    ),
+  );
+}
 }

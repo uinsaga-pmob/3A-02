@@ -3,11 +3,11 @@ import 'package:app_3a_02/database/db_helper.dart';
 import 'package:app_3a_02/models/diaryitem_page.dart';
 
 class Diary1Page extends StatefulWidget {
-  final DiaryItem item;
+  final DiaryItem diary;
 
   const Diary1Page({
     super.key,
-    required this.item,
+    required this.diary,
   });
 
   @override
@@ -17,316 +17,353 @@ class Diary1Page extends StatefulWidget {
 
 class _Diary1PageState
     extends State<Diary1Page> {
-  late final TextEditingController
-      _judulController;
-
-  late final TextEditingController
-      _isiController;
-
-  late int _isFavorite;
+  late DiaryItem diary;
 
   @override
   void initState() {
     super.initState();
-
-    _judulController =
-        TextEditingController(
-      text: widget.item.judul,
-    );
-
-    _isiController =
-        TextEditingController(
-      text: widget.item.isi,
-    );
-
-    _isFavorite = widget.item.isFavorite;
+    diary = widget.diary;
   }
 
-  @override
-  void dispose() {
-    _judulController.dispose();
-    _isiController.dispose();
-
-    super.dispose();
-  }
-
-  Future<void> _simpan() async {
-    if (_judulController.text
-            .trim()
-            .isEmpty ||
-        _isiController.text
-            .trim()
-            .isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Judul dan isi diary wajib diisi',
-          ),
-        ),
-      );
-
-      return;
-    }
-
-    final updated = DiaryItem(
-      id: widget.item.id,
-
-      judul:
-          _judulController.text.trim(),
-
-      isi:
-          _isiController.text.trim(),
-
-      tanggal: widget.item.tanggal,
-
-      isFavorite: _isFavorite,
-    );
-
-    await DBHelper.instance
-        .updateDiary(updated);
-
-    if (mounted) {
-      Navigator.pop(context, true);
-    }
-  }
-
-  Future<void> _suka() async {
-    if (widget.item.id == null) return;
-
-    final newValue =
-        _isFavorite == 1 ? 0 : 1;
+  Future<void> toggleFavorite() async {
+    int newValue =
+        diary.isFavorite == 1 ? 0 : 1;
 
     await DBHelper.instance.toggleFavorite(
-      widget.item.id!,
+      diary.id!,
       newValue,
+    );
+
+    setState(() {
+      diary = DiaryItem(
+        id: diary.id,
+        judul: diary.judul,
+        isi: diary.isi,
+        tanggal: diary.tanggal,
+        mood: diary.mood,
+        kategori: diary.kategori,
+        isFavorite: newValue,
+      );
+    });
+  }
+
+  Future<void> deleteDiary() async {
+    await DBHelper.instance.deleteDiary(
+      diary.id!,
     );
 
     if (!mounted) return;
 
-    setState(() {
-      _isFavorite = newValue;
-    });
-
     Navigator.pop(context, true);
   }
 
-  Future<void> _hapus() async {
-    final confirm =
-        await showDialog<bool>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text(
-            'Konfirmasi',
+  Widget buildChip(
+    String text,
+    IconData icon,
+    Color color,
+  ) {
+    return Container(
+      padding:
+          const EdgeInsets.symmetric(
+        horizontal: 10,
+        vertical: 6,
+      ),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.15),
+        borderRadius:
+            BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 14,
+            color: color,
           ),
-
-          content: const Text(
-            'Apakah diary akan dihapus?',
+          const SizedBox(width: 5),
+          Text(
+            text,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w500,
+            ),
           ),
-
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(
-                  context,
-                  false,
-                );
-              },
-
-              child: const Text(
-                'Tidak',
-              ),
-            ),
-
-            TextButton(
-              onPressed: () {
-                Navigator.pop(
-                  context,
-                  true,
-                );
-              },
-
-              child: const Text(
-                'Ya',
-              ),
-            ),
-          ],
-        );
-      },
+        ],
+      ),
     );
+  }
 
-    if (confirm == true) {
-      if (widget.item.id != null) {
-        await DBHelper.instance
-            .deleteDiary(
-          widget.item.id!,
-        );
-      }
-
-      if (mounted) {
-        Navigator.pop(context, true);
-      }
-    }
+  Widget actionButton(
+    IconData icon,
+    String text,
+    VoidCallback onTap,
+  ) {
+    return InkWell(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize:
+            MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            color: Colors.white,
+          ),
+          const SizedBox(height: 5),
+          Text(
+            text,
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        resizeToAvoidBottomInset:
-            true,
-
-        appBar: AppBar(
-          backgroundColor:
-              Colors.transparent,
-
-          elevation: 0,
-
-          leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.blue,
-            ),
-
-            onPressed: () {
-              Navigator.pop(context);
-            },
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Column(
+        children: [
+          Stack(
+            children: [
+              Image.asset(
+                "assets/images/sky.jpg",
+                width: double.infinity,
+                height: 280,
+                fit: BoxFit.cover,
+              ),
+              SafeArea(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.all(
+                    16,
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor:
+                            Colors.white,
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.arrow_back,
+                          ),
+                          onPressed: () {
+                            Navigator.pop(
+                              context,
+                              true,
+                            );
+                          },
+                        ),
+                      ),
+                      const Spacer(),
+                      CircleAvatar(
+                        backgroundColor:
+                            Colors.white,
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.more_horiz,
+                          ),
+                          onPressed: () {},
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
 
-          title: const Text(
-            "Detail Diary",
+          Expanded(
+            child: SingleChildScrollView(
+              padding:
+                  const EdgeInsets.all(20,),
+              child: Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          diary.judul,
+                          style:
+                              const TextStyle(
+                            fontSize: 28,
+                            fontWeight:
+                                FontWeight
+                                    .bold,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed:
+                            toggleFavorite,
+                        icon: Icon(
+                          diary.isFavorite ==
+                                  1
+                              ? Icons.star
+                              : Icons
+                                  .star_border,
+                          color:
+                              Colors.amber,
+                          size: 30,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    diary.tanggal,
+                    style:
+                        const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 15,
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 18),
+                  
+                  Wrap(
+                    spacing: 10,
+                    children: [
+                      buildChip(
+                        diary.mood,
+                        Icons.emoji_emotions,
+                        Colors.orange,
+                      ),
+                      buildChip(
+                        diary.kategori,
+                        Icons.folder,
+                        Colors.blue,
+                      ),
+                    ],
+                  ),
 
-            style: TextStyle(
-              color: Colors.blue,
-              fontWeight:
-                  FontWeight.bold,
-              fontSize: 16,
+                  const SizedBox(height: 25),
+
+                  Text(
+                    diary.isi,
+                    style:
+                        const TextStyle(
+                      fontSize: 18,
+                      height: 1.8,
+                    ),
+                  ),
+
+                  const SizedBox(height: 30),
+                ],
+              ),
             ),
           ),
+        ],
+      ),
 
-          actions: [
-            IconButton(
-              onPressed: _hapus,
+      bottomNavigationBar: Container(
+        height: 90,
+        decoration: const BoxDecoration(
+          color: Color(0xFF2F80ED),
 
-              icon: const Icon(
-                Icons.delete,
-                color: Colors.red,
-              ),
-            ),
-
-            IconButton(
-              onPressed: _suka,
-
-              icon: Icon(
-                _isFavorite == 1
-                    ? Icons.favorite
-                    : Icons
-                        .favorite_border,
-
-                color: Colors.pink,
-              ),
-            ),
-
-            IconButton(
-              onPressed: _simpan,
-
-              icon: const Icon(
-                Icons.check,
-                color: Colors.blue,
-              ),
-            ),
-          ],
+          borderRadius:
+              BorderRadius.only(
+            topLeft:
+                Radius.circular(25),
+            topRight:
+                Radius.circular(25),
+          ),
         ),
 
-        body: Container(
-          width: double.infinity,
-          height: double.infinity,
+        child: Row(
+          mainAxisAlignment:
+              MainAxisAlignment
+                  .spaceEvenly,
 
-          decoration:
-              const BoxDecoration(
-            gradient: LinearGradient(
-              begin:
-                  Alignment.topCenter,
-
-              end:
-                  Alignment.bottomCenter,
-
-              colors: [
-                Colors.white,
-                Color(0xFF5FB9E3),
-              ],
-            ),
-          ),
-
-          child: Padding(
-            padding:
-                const EdgeInsets.all(
-              24,
-            ),
-
-            child: Column(
-              children: [
-                TextField(
-                  controller:
-                      _judulController,
-
-                  decoration:
-                      const InputDecoration(
-                    labelText:
-                        "Judul diary",
-
-                    filled: true,
-
-                    fillColor:
-                        Colors.white,
-
-                    border:
-                        OutlineInputBorder(
-                      borderSide:
-                          BorderSide.none,
+          children: [
+            actionButton(
+              Icons.edit,
+              "Edit",
+              () {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      "Fitur Edit akan dibuat berikutnya",
                     ),
                   ),
-                ),
+                );
+              },
+            ),
 
-                const SizedBox(
-                  height: 16,
-                ),
-
-                Expanded(
-                  child: TextField(
-                    controller:
-                        _isiController,
-
-                    maxLines: null,
-
-                    expands: true,
-
-                    textAlignVertical:
-                        TextAlignVertical
-                            .top,
-
-                    decoration:
-                        const InputDecoration(
-                      hintText:
-                          "Tulis diary di sini...",
-
-                      filled: true,
-
-                      fillColor:
-                          Colors.white,
-
-                      border:
-                          OutlineInputBorder(
-                        borderSide:
-                            BorderSide.none,
+            actionButton(
+              Icons.delete_outline,
+              "Hapus",
+              () async {
+                bool? confirm =
+                    await showDialog(
+                  context: context,
+                  builder: (_) =>
+                      AlertDialog(
+                    title: const Text(
+                      "Hapus Diary",
+                    ),
+                    content:
+                        const Text(
+                      "Yakin ingin menghapus diary ini?",
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(
+                            context,
+                            false,
+                          );
+                        },
+                        child:
+                            const Text(
+                          "Batal",
+                        ),
                       ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(
+                            context,
+                            true,
+                          );
+                        },
+                        child:
+                            const Text(
+                          "Hapus",
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+
+                if (confirm == true) {
+                  deleteDiary();
+                }
+              },
+            ),
+
+            actionButton(
+              Icons.share_outlined,
+              "Bagikan",
+              () {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      "Fitur Bagikan belum dibuat",
                     ),
                   ),
-                ),
-              ],
+                );
+              },
             ),
-          ),
+          ],
         ),
       ),
     );

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:app_3a_02/register_page.dart';
-import 'package:app_3a_02/datang_page.dart';
+import 'package:app_3a_02/beranda_page.dart';
 import 'package:app_3a_02/reset_page.dart';
 import 'package:app_3a_02/database/db_helper.dart';
 
@@ -182,7 +182,7 @@ class LoginPage extends StatelessWidget {
                             if (isLoginSuccess) {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (_) => DatangPage()),
+                                MaterialPageRoute(builder: (_) => BerandaPage()),
                               );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
