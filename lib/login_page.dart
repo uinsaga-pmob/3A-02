@@ -15,311 +15,233 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-
         body: SingleChildScrollView(
-          child: Container(
-            constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height,
-            ),
-
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Colors.white, Color(0xFF5FB9E3)],
-              ),
-            ),
-
-            padding: const EdgeInsets.all(16.0),
-
-            child: Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-              ),
-
-              child: Column(
-                children: [
-                  Image.asset(
-                    'assets/images/mydiary.png',
-                    width: 140,
-                    height: 140,
-                  ),
-
-                  SizedBox(height: 20),
-
-                  // JUDUL
-                  Text(
-                    "Masuk",
-
-                    style: TextStyle(
-                      fontFamily: "IrishGrover",
-                      fontSize: 28,
-                      color: Colors.blue,
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: Stack(
+              children: [
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Opacity(
+                    opacity: 1,
+                    child: Image.asset(
+                      "assets/images/leaf_bottom.png",
+                      fit: BoxFit.cover,
+                      height: 180,
                     ),
                   ),
+                ),
 
-                  SizedBox(height: 50),
-
-                  // FIELD EMAIL
-                  TextField(
-                    controller: emailController,
-
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      hintText: "Email",
-
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 32,
                   ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 30),
 
-                  // FIELD PASSWORD
-                  SizedBox(height: 16),
-
-                  TextField(
-                    controller: passwordController,
-                    obscureText: true,
-
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      hintText: "Sandi",
-
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                  ),
-
-                  // LUPA SANDI
-                  SizedBox(height: 12),
-
-                  Align(
-                    alignment: Alignment.centerRight,
-
-                    child: TextButton(
-                      onPressed: () {
-                        final TextEditingController resetEmailController =
-                            TextEditingController();
-
-                        showDialog(
-                          context: context,
-
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Row(
-                                children: [
-                                  Icon(Icons.lock_reset, color: Colors.blue),
-
-                                  SizedBox(width: 8),
-
-                                  Text("Lupa Sandi?"),
-                                ],
-                              ),
-
-                              content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-
-                                children: [
-                                  Text(
-                                    "Masukkan email anda untuk menerima instruksi reset sandi.",
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: const [
+                                Text(
+                                  "Selamat Datang di",
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: Color(0xFF1B2A57),
+                                    fontWeight: FontWeight.w600,
                                   ),
-
-                                  SizedBox(height: 12),
-
-                                  TextField(
-                                    controller: resetEmailController,
-
-                                    decoration: InputDecoration(
-                                      hintText: "Masukkan email",
-
-                                      prefixIcon: Icon(Icons.email),
-
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-
-                                  child: Text("Batal"),
                                 ),
 
-                                ElevatedButton(
-                                  onPressed: () {
-                                    if (resetEmailController.text
-                                        .trim()
-                                        .isEmpty) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          behavior: SnackBarBehavior.floating,
+                                SizedBox(height: 8),
 
-                                          backgroundColor: Colors.white,
-
-                                          content: Text(
-                                            "Email harus diisi",
-
-                                            style: TextStyle(
-                                              color: Colors.blue,
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    } else {
-                                      Navigator.pop(context);
-
-                                      Navigator.push(
-                                        context,
-
-                                        MaterialPageRoute(
-                                          builder: (context) => ResetPage(),
-                                        ),
-                                      );
-                                    }
-                                  },
-
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blue,
+                                Text(
+                                  "MyDiary",
+                                  style: TextStyle(
+                                    fontFamily: "FrankRuhlLibre",
+                                    fontSize: 36,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF1B2A57),
                                   ),
+                                ),
 
-                                  child: Text(
-                                    "Kirim",
+                                SizedBox(height: 12),
 
-                                    style: TextStyle(color: Colors.white),
+                                Text(
+                                  "Tempat aman untuk menulis\ncerita dan perasaanmu.",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black54,
+                                    height: 1.5,
                                   ),
                                 ),
                               ],
-                            );
-                          },
-                        );
-                      },
+                            ),
+                          ),
 
-                      child: Text(
-                        "Lupa Sandi?",
+                          Image.asset("assets/images/mydiary.png", width: 120),
+                        ],
+                      ),
 
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          color: Colors.blue,
+                      const SizedBox(height: 50),
+
+                      TextField(
+                        controller: emailController,
+                        decoration: InputDecoration(
+                          hintText: "Email",
+                          prefixIcon: const Icon(Icons.email_outlined),
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 18,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
 
-                  // BUTTON LOGIN
-                  SizedBox(height: 20),
+                      const SizedBox(height: 16),
 
-                  ElevatedButton(
-                    onPressed: () async {
-                      if (emailController.text.isEmpty ||
-                          passwordController.text.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              "Email dan Sandi harus diisi",
-
-                              style: TextStyle(color: Colors.blue),
-                            ),
-
-                            backgroundColor: Colors.white,
-
-                            behavior: SnackBarBehavior.floating,
+                      TextField(
+                        controller: passwordController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          hintText: "Password",
+                          prefixIcon: const Icon(Icons.lock_outline),
+                          suffixIcon: const Icon(Icons.visibility_off),
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 18,
                           ),
-                        );
-                      } else {
-                        bool isLoginSuccess = await DBHelper.instance.loginUser(
-                          emailController.text.trim(),
-                          passwordController.text.trim(),
-                        );
-
-                        if (isLoginSuccess) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                "Login berhasil",
-
-                                style: TextStyle(color: Colors.blue),
-                              ),
-
-                              backgroundColor: Colors.white,
-
-                              behavior: SnackBarBehavior.floating,
-                            ),
-                          );
-
-                          Navigator.push(
-                            context,
-
-                            MaterialPageRoute(
-                              builder: (context) => DatangPage(),
-                            ),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                "Email atau sandi salah",
-
-                                style: TextStyle(color: Colors.blue),
-                              ),
-
-                              backgroundColor: Colors.white,
-
-                              behavior: SnackBarBehavior.floating,
-                            ),
-                          );
-                        }
-                      }
-                    },
-
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[800],
-
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                        ),
                       ),
 
-                      minimumSize: Size(double.infinity, 50),
-                    ),
-
-                    child: Text("Masuk", style: TextStyle(color: Colors.white)),
-                  ),
-
-                  // BUTTON REGISTER
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-
-                        MaterialPageRoute(builder: (context) => RegisterPage()),
-                      );
-                    },
-
-                    child: Text(
-                      "Tidak punya akun? Daftar",
-
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        color: Colors.blue,
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () {
+                            // pakai kode lupa sandi milikmu
+                          },
+                          child: const Text(
+                            "Lupa sandi?",
+                            style: TextStyle(
+                              color: Color(0xFF2F80ED),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+
+                      const SizedBox(height: 10),
+
+                      SizedBox(
+                        width: double.infinity,
+                        height: 55,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            if (emailController.text.isEmpty ||
+                                passwordController.text.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Email dan Sandi harus diisi"),
+                                ),
+                              );
+                              return;
+                            }
+
+                            bool isLoginSuccess = await DBHelper.instance
+                                .loginUser(
+                                  emailController.text.trim(),
+                                  passwordController.text.trim(),
+                                );
+
+                            if (isLoginSuccess) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => DatangPage()),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Email atau sandi salah"),
+                                ),
+                              );
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF2F80ED),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            "Masuk",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const Spacer(),
+
+                      Center(
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => RegisterPage()),
+                            );
+                          },
+                          child: RichText(
+                            text: const TextSpan(
+                              style: TextStyle(color: Colors.black54),
+                              children: [
+                                TextSpan(text: "Belum punya akun? "),
+                                TextSpan(
+                                  text: "Buat akun",
+                                  style: TextStyle(
+                                    color: Color(0xFF2F80ED),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

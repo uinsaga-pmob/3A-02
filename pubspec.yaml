@@ -31,6 +31,7 @@ flutter:
      - assets/images/mydiary.png
      - assets/images/profil.png
      - assets/images/logo.png
+     - assets/images/leaf_bottom.png
 
   fonts:
      - family: IrishGrover
