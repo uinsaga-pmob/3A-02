@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:app_3a_02/buat_page.dart';
 import 'package:app_3a_02/diary1_page.dart';
 import 'package:flutter/material.dart';
@@ -311,13 +313,22 @@ Widget buildDiaryList() {
 
           leading: ClipRRect(
             borderRadius: BorderRadius.circular(10),
-            child: Image.asset(
-              "assets/images/diary.jpg",
-              width: 55,
-              height: 55,
-              fit: BoxFit.cover,
+            child: item.imagePath.isNotEmpty 
+              ? Image.file(
+                  File(item.imagePath),
+                  width: 55,
+                  height: 55,
+                  fit: BoxFit.cover,
+                )
+              : Container(
+                  width: 55,
+                  height: 55,
+                  color: Colors.grey.shade200,
+                  child: const Icon(
+                    Icons.image,
+                ),
+              ),
             ),
-          ),
 
           title: Text(item.judul),
 

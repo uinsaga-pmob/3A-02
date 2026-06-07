@@ -24,7 +24,7 @@ class DBHelper {
 
     return openDatabase(
       path,
-      version: 4,
+      version: 5,
 
       onCreate: (database, version) async {
         // TABEL DIARY
@@ -36,6 +36,8 @@ class DBHelper {
             tanggal TEXT NOT NULL,
             mood TEXT,
             kategori TEXT,
+            imagePath TEXT,
+            lokasi TEXT,
             isFavorite INTEGER NOT NULL DEFAULT 0
           )
         ''');
@@ -69,7 +71,7 @@ class DBHelper {
           ''');
         }
 
-        if (oldVersion < 4) {
+        if (oldVersion < 5) {
 
           await database.execute(
             'ALTER TABLE diary ADD COLUMN mood TEXT',
@@ -78,6 +80,15 @@ class DBHelper {
           await database.execute(
             'ALTER TABLE diary ADD COLUMN kategori TEXT',
           );
+
+          await database.execute(
+            'ALTER TABLE diary ADD COLUMN imagePath TEXT',
+          );
+
+          await database.execute(
+            'ALTER TABLE diary ADD COLUMN lokasi TEXT',
+          );
+
         }
       },
     );

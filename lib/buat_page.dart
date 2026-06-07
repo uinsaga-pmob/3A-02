@@ -60,6 +60,8 @@ class _BuatPageState extends State<BuatPage> {
             "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
         mood: selectedMood,
         kategori: selectedKategori,
+        imagePath: selectedImage?.path ?? "",
+        lokasi: lokasi,
       ),
     );
 

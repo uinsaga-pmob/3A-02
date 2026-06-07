@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:app_3a_02/database/db_helper.dart';
 import 'package:app_3a_02/models/diaryitem_page.dart';
@@ -129,42 +131,67 @@ class _Diary1PageState
         children: [
           Stack(
             children: [
-              Image.asset(
-                "assets/images/sky.jpg",
-                width: double.infinity,
-                height: 280,
-                fit: BoxFit.cover,
+              diary.imagePath.isNotEmpty 
+                ? SizedBox(
+                    width: double.infinity,
+                    height: 320,
+                    child: Image.file(
+                    File(diary.imagePath),
+                    width: 55,
+                    height: 55,
+                    fit: BoxFit.cover,
+                  ),
+                )
+                : Container(
+                    width: double.infinity,
+                    height: 320,
+                    color: Colors.grey.shade200,
+                    child: const Center(
+                      child: Icon(
+                        Icons.image,
+                        size: 70,
+                        color: Colors.grey,
+                    ),
+                  ),
+                ),
+
+              Container(
+                height: 320,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withOpacity(0.35),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
               ),
+
               SafeArea(
                 child: Padding(
-                  padding:
-                      const EdgeInsets.all(
-                    16,
-                  ),
+                  padding: const EdgeInsets.all(16),
                   child: Row(
                     children: [
                       CircleAvatar(
-                        backgroundColor:
-                            Colors.white,
+                        backgroundColor:Colors.white,
                         child: IconButton(
                           icon: const Icon(
                             Icons.arrow_back,
                           ),
                           onPressed: () {
-                            Navigator.pop(
-                              context,
-                              true,
-                            );
+                            Navigator.pop(context);
                           },
                         ),
                       ),
                       const Spacer(),
                       CircleAvatar(
-                        backgroundColor:
-                            Colors.white,
+                        backgroundColor:Colors.white,
                         child: IconButton(
                           icon: const Icon(
-                            Icons.more_horiz,
+                            Icons.more_vert,
+                            color: Colors.black,
                           ),
                           onPressed: () {},
                         ),
@@ -177,90 +204,110 @@ class _Diary1PageState
           ),
 
           Expanded(
-            child: SingleChildScrollView(
-              padding:
-                  const EdgeInsets.all(20,),
-              child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          diary.judul,
-                          style:
-                              const TextStyle(
-                            fontSize: 28,
-                            fontWeight:
-                                FontWeight
-                                    .bold,
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                ),
+              ),
+
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            diary.judul,
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight:
+                                  FontWeight
+                                      .bold,
+                            ),
                           ),
                         ),
-                      ),
-                      IconButton(
-                        onPressed:
-                            toggleFavorite,
-                        icon: Icon(
-                          diary.isFavorite ==
-                                  1
-                              ? Icons.star
-                              : Icons
-                                  .star_border,
-                          color:
-                              Colors.amber,
-                          size: 30,
+                        IconButton(
+                          onPressed:
+                              toggleFavorite,
+                          icon: Icon(
+                            diary.isFavorite ==
+                                    1
+                                ? Icons.star
+                                : Icons
+                                    .star_border,
+                            color:
+                                Colors.amber,
+                            size: 30,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    diary.tanggal,
-                    style:
-                        const TextStyle(
-                      color: Colors.grey,
-                      fontSize: 15,
+                      ],
                     ),
-                  ),
-                  
-                  const SizedBox(height: 18),
-                  
-                  Wrap(
-                    spacing: 10,
-                    children: [
-                      buildChip(
-                        diary.mood,
-                        Icons.emoji_emotions,
-                        Colors.orange,
+                    const SizedBox(height: 5),
+                    Text(
+                      diary.tanggal,
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 15,
                       ),
-                      buildChip(
-                        diary.kategori,
-                        Icons.folder,
-                        Colors.blue,
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 25),
-
-                  Text(
-                    diary.isi,
-                    style:
-                        const TextStyle(
-                      fontSize: 18,
-                      height: 1.8,
                     ),
-                  ),
+                    
+                    const SizedBox(height: 18),
 
-                  const SizedBox(height: 30),
-                ],
+                    if (diary.lokasi.isNotEmpty)
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.location_on,
+                          color: Colors.red,
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: Text(diary.lokasi)),
+                      ],
+                    ),
+
+                    const SizedBox(height: 18),
+                    
+                    Wrap(
+                      spacing: 10,
+                      children: [
+                        buildChip(
+                          diary.mood,
+                          Icons.emoji_emotions,
+                          Colors.orange,
+                        ),
+                        buildChip(
+                          diary.kategori,
+                          Icons.folder,
+                          Colors.blue,
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 25),
+
+                    Text(
+                      diary.isi,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        height: 1.8,
+                      ),
+                    ),
+
+                    const SizedBox(height: 30),
+                  ],
+                ),
               ),
             ),
           ),
         ],
       ),
-
+    
       bottomNavigationBar: Container(
         height: 90,
         decoration: const BoxDecoration(
