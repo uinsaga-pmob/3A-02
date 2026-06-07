@@ -155,4 +155,29 @@ class DBHelper {
 
     return result.isNotEmpty;
   }
+
+  // CEK EMAIL
+  Future<bool> checkEmailExists(String email) async {
+    final database = await db;
+
+    final result = await database.query(
+      'users',
+      where: 'email = ?',
+      whereArgs: [email],
+    );
+
+    return result.isNotEmpty;
+  }
+
+  // UPDATE PASSWORD
+  Future<int> updatePassword(String email, String newPassword) async {
+    final database = await db;
+
+    return database.update(
+      'users',
+      {'password': newPassword},
+      where: 'email = ?',
+      whereArgs: [email],
+    );
+  }
 }

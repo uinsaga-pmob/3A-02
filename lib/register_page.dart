@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:app_3a_02/database/db_helper.dart';
+import 'package:app_3a_02/utils/user_prefs.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -10,8 +11,11 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final namaController = TextEditingController();
+
   final emailController = TextEditingController();
+
   final passwordController = TextEditingController();
+
   final confirmPasswordController = TextEditingController();
 
   bool hidePassword = true;
@@ -34,6 +38,15 @@ class _RegisterPageState extends State<RegisterPage> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text("Semua field harus diisi")));
+
+      return;
+    }
+
+    if (passwordController.text.trim().length < 8) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Password minimal 8 karakter")),
+      );
+
       return;
     }
 
@@ -41,6 +54,7 @@ class _RegisterPageState extends State<RegisterPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Konfirmasi password tidak sesuai")),
       );
+
       return;
     }
 
@@ -48,6 +62,14 @@ class _RegisterPageState extends State<RegisterPage> {
       await DBHelper.instance.registerUser(
         emailController.text.trim(),
         passwordController.text.trim(),
+      );
+
+      await UserPrefs.saveProfile(
+        nama: namaController.text.trim(),
+        email: emailController.text.trim(),
+        bio: "",
+        hobi: "",
+        foto: "",
       );
 
       if (!mounted) return;
@@ -71,21 +93,31 @@ class _RegisterPageState extends State<RegisterPage> {
   }) {
     return InputDecoration(
       hintText: hint,
+
       prefixIcon: Icon(icon, color: Colors.grey),
+
       suffixIcon: suffixIcon,
+
       filled: true,
       fillColor: Colors.white,
+
       contentPadding: const EdgeInsets.symmetric(vertical: 16),
+
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
+
         borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
       ),
+
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
+
         borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
       ),
+
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
+
         borderSide: const BorderSide(color: Color(0xFF2F80ED)),
       ),
     );
@@ -99,16 +131,16 @@ class _RegisterPageState extends State<RegisterPage> {
 
         body: Stack(
           children: [
-            // DAUN PALING BAWAH
             Positioned(
-              bottom: -10,
+              bottom: 0,
               left: 0,
               right: 0,
               child: IgnorePointer(
                 child: Image.asset(
                   "assets/images/leaf_bottom.png",
-                  height: 270,
                   fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: 250,
                 ),
               ),
             ),
@@ -122,10 +154,13 @@ class _RegisterPageState extends State<RegisterPage> {
                 children: [
                   IconButton(
                     padding: EdgeInsets.zero,
+
                     constraints: const BoxConstraints(),
+
                     onPressed: () {
                       Navigator.pop(context);
                     },
+
                     icon: const Icon(Icons.arrow_back),
                   ),
 
@@ -133,6 +168,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                   const Text(
                     "Buat Akun",
+
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -144,6 +180,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                   const Text(
                     "Buat akun untuk mulai\nmenulis di MyDiary.",
+
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.black54,
@@ -155,6 +192,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                   TextField(
                     controller: namaController,
+
                     decoration: customInput(
                       hint: "Nama Lengkap",
                       icon: Icons.person_outline,
@@ -165,6 +203,9 @@ class _RegisterPageState extends State<RegisterPage> {
 
                   TextField(
                     controller: emailController,
+
+                    keyboardType: TextInputType.emailAddress,
+
                     decoration: customInput(
                       hint: "Email",
                       icon: Icons.email_outlined,
@@ -175,16 +216,21 @@ class _RegisterPageState extends State<RegisterPage> {
 
                   TextField(
                     controller: passwordController,
+
                     obscureText: hidePassword,
+
                     decoration: customInput(
                       hint: "Password",
+
                       icon: Icons.lock_outline,
+
                       suffixIcon: IconButton(
                         icon: Icon(
                           hidePassword
                               ? Icons.visibility_off_outlined
                               : Icons.visibility_outlined,
                         ),
+
                         onPressed: () {
                           setState(() {
                             hidePassword = !hidePassword;
@@ -198,16 +244,21 @@ class _RegisterPageState extends State<RegisterPage> {
 
                   TextField(
                     controller: confirmPasswordController,
+
                     obscureText: hideConfirmPassword,
+
                     decoration: customInput(
                       hint: "Konfirmasi Password",
+
                       icon: Icons.lock_outline,
+
                       suffixIcon: IconButton(
                         icon: Icon(
                           hideConfirmPassword
                               ? Icons.visibility_off_outlined
                               : Icons.visibility_outlined,
                         ),
+
                         onPressed: () {
                           setState(() {
                             hideConfirmPassword = !hideConfirmPassword;
@@ -222,17 +273,23 @@ class _RegisterPageState extends State<RegisterPage> {
                   SizedBox(
                     width: double.infinity,
                     height: 55,
+
                     child: ElevatedButton(
                       onPressed: registerUser,
+
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF2F80ED),
+
                         elevation: 0,
+
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),
                       ),
+
                       child: const Text(
                         "Daftar",
+
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
@@ -247,16 +304,21 @@ class _RegisterPageState extends State<RegisterPage> {
                   Center(
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
+
                       children: [
                         const Text("Sudah punya akun? "),
+
                         GestureDetector(
                           onTap: () {
                             Navigator.pop(context);
                           },
+
                           child: const Text(
                             "Masuk",
+
                             style: TextStyle(
                               color: Color(0xFF2F80ED),
+
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -265,7 +327,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
 
-                  const SizedBox(height: 180),
+                  const SizedBox(height: 185),
                 ],
               ),
             ),
