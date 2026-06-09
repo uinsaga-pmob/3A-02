@@ -72,23 +72,13 @@ class DBHelper {
         }
 
         if (oldVersion < 5) {
+          await database.execute('ALTER TABLE diary ADD COLUMN mood TEXT');
 
-          await database.execute(
-            'ALTER TABLE diary ADD COLUMN mood TEXT',
-          );
+          await database.execute('ALTER TABLE diary ADD COLUMN kategori TEXT');
 
-          await database.execute(
-            'ALTER TABLE diary ADD COLUMN kategori TEXT',
-          );
+          await database.execute('ALTER TABLE diary ADD COLUMN imagePath TEXT');
 
-          await database.execute(
-            'ALTER TABLE diary ADD COLUMN imagePath TEXT',
-          );
-
-          await database.execute(
-            'ALTER TABLE diary ADD COLUMN lokasi TEXT',
-          );
-
+          await database.execute('ALTER TABLE diary ADD COLUMN lokasi TEXT');
         }
       },
     );
@@ -178,5 +168,19 @@ class DBHelper {
     );
 
     return result.isNotEmpty;
+  }
+
+  // RESET PASSWORD
+  Future<bool> resetPassword(String email, String newPassword) async {
+    final database = await db;
+
+    final result = await database.update(
+      'users',
+      {'password': newPassword},
+      where: 'email = ?',
+      whereArgs: [email],
+    );
+
+    return result > 0;
   }
 }

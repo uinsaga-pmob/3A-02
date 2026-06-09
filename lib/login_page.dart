@@ -1,37 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:app_3a_02/register_page.dart';
 import 'package:app_3a_02/beranda_page.dart';
 import 'package:app_3a_02/reset_page.dart';
 import 'package:app_3a_02/database/db_helper.dart';
 
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
-  final TextEditingController emailController = TextEditingController();
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
 
-  final TextEditingController passwordController = TextEditingController();
+class _LoginPageState extends State<LoginPage> {
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  bool hidePassword = true;
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
         body: SingleChildScrollView(
+          physics: const NeverScrollableScrollPhysics(),
           child: SizedBox(
-            height: MediaQuery.of(context).size.height,
+            height: size.height,
             child: Stack(
               children: [
                 Positioned(
-                  bottom: 0,
                   left: 0,
                   right: 0,
+                  bottom: 0,
                   child: Opacity(
-                    opacity: 1,
+                    opacity: 0.9,
                     child: Image.asset(
                       "assets/images/leaf_bottom.png",
-                      fit: BoxFit.cover,
-                      height: 180,
+                      width: size.width,
+                      fit: BoxFit.fitWidth,
                     ),
                   ),
                 ),
@@ -39,12 +56,12 @@ class LoginPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
-                    vertical: 32,
+                    vertical: 20,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 30),
+                      SizedBox(height: size.height * 0.03),
 
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,9 +78,7 @@ class LoginPage extends StatelessWidget {
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
-
                                 SizedBox(height: 8),
-
                                 Text(
                                   "MyDiary",
                                   style: TextStyle(
@@ -73,9 +88,7 @@ class LoginPage extends StatelessWidget {
                                     color: Color(0xFF1B2A57),
                                   ),
                                 ),
-
                                 SizedBox(height: 12),
-
                                 Text(
                                   "Tempat aman untuk menulis\ncerita dan perasaanmu.",
                                   style: TextStyle(
@@ -88,11 +101,14 @@ class LoginPage extends StatelessWidget {
                             ),
                           ),
 
-                          Image.asset("assets/images/mydiary.png", width: 120),
+                          Image.asset(
+                            "assets/images/mydiary.png",
+                            width: size.width * 0.28,
+                          ),
                         ],
                       ),
 
-                      const SizedBox(height: 50),
+                      SizedBox(height: size.height * 0.05),
 
                       TextField(
                         controller: emailController,
@@ -101,12 +117,8 @@ class LoginPage extends StatelessWidget {
                           prefixIcon: const Icon(Icons.email_outlined),
                           filled: true,
                           fillColor: Colors.white,
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 18,
-                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey.shade300),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -115,23 +127,33 @@ class LoginPage extends StatelessWidget {
                         ),
                       ),
 
-                      const SizedBox(height: 16),
+                      SizedBox(height: size.height * 0.02),
 
                       TextField(
                         controller: passwordController,
-                        obscureText: true,
+                        obscureText: hidePassword,
+                        maxLength: 8,
+                        inputFormatters: [LengthLimitingTextInputFormatter(8)],
                         decoration: InputDecoration(
+                          counterText: "",
                           hintText: "Password",
                           prefixIcon: const Icon(Icons.lock_outline),
-                          suffixIcon: const Icon(Icons.visibility_off),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              hidePassword
+                                  ? Icons.visibility_off_outlined
+                                  : Icons.visibility_outlined,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                hidePassword = !hidePassword;
+                              });
+                            },
+                          ),
                           filled: true,
                           fillColor: Colors.white,
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 18,
-                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey.shade300),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -144,7 +166,12 @@ class LoginPage extends StatelessWidget {
                         alignment: Alignment.centerRight,
                         child: TextButton(
                           onPressed: () {
-                            // pakai kode lupa sandi milikmu
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const ResetPage(),
+                              ),
+                            );
                           },
                           child: const Text(
                             "Lupa sandi?",
@@ -156,7 +183,7 @@ class LoginPage extends StatelessWidget {
                         ),
                       ),
 
-                      const SizedBox(height: 10),
+                      SizedBox(height: size.height * 0.01),
 
                       SizedBox(
                         width: double.infinity,
@@ -182,7 +209,9 @@ class LoginPage extends StatelessWidget {
                             if (isLoginSuccess) {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (_) => BerandaPage()),
+                                MaterialPageRoute(
+                                  builder: (_) => const BerandaPage(),
+                                ),
                               );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -200,11 +229,7 @@ class LoginPage extends StatelessWidget {
                           ),
                           child: const Text(
                             "Masuk",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
                         ),
                       ),
@@ -216,7 +241,9 @@ class LoginPage extends StatelessWidget {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (_) => RegisterPage()),
+                              MaterialPageRoute(
+                                builder: (_) => const RegisterPage(),
+                              ),
                             );
                           },
                           child: RichText(
@@ -237,7 +264,7 @@ class LoginPage extends StatelessWidget {
                         ),
                       ),
 
-                      const SizedBox(height: 20),
+                      SizedBox(height: size.height * 0.02),
                     ],
                   ),
                 ),
