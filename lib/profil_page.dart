@@ -8,12 +8,10 @@ class ProfilPage extends StatefulWidget {
   const ProfilPage({super.key});
 
   @override
-  State<ProfilPage> createState() =>
-      _ProfilPageState();
+  State<ProfilPage> createState() => _ProfilPageState();
 }
 
-class _ProfilPageState
-    extends State<ProfilPage> {
+class _ProfilPageState extends State<ProfilPage> {
   String nama = "";
   String email = "";
   String bio = "";
@@ -27,8 +25,7 @@ class _ProfilPageState
   }
 
   Future<void> _loadProfile() async {
-    final data =
-        await UserPrefs.getProfile();
+    final data = await UserPrefs.getProfile();
 
     if (!mounted) return;
 
@@ -48,53 +45,11 @@ class _ProfilPageState
       return FileImage(File(fotoPath!));
     }
 
-    return const AssetImage(
-      "assets/images/profil.png",
-    );
-  }
-
-  Widget _buildItem(
-    String title,
-    String value,
-  ) {
-    return Column(
-      crossAxisAlignment:
-          CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 12,
-          ),
-        ),
-
-        const SizedBox(height: 4),
-
-        Text(
-          value.isEmpty ? "-" : value,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-          ),
-        ),
-
-        const SizedBox(height: 4),
-
-        Container(
-          height: 1,
-          color: Colors.white,
-        ),
-
-        const SizedBox(height: 12),
-      ],
-    );
+    return const AssetImage("assets/images/profil.png");
   }
 
   Future<void> _editProfil() async {
-    final result =
-        await Navigator.push<
-            Map<String, dynamic>>(
+    final result = await Navigator.push<Map<String, dynamic>>(
       context,
       MaterialPageRoute(
         builder: (_) => EditPage(
@@ -110,205 +65,200 @@ class _ProfilPageState
     if (result != null) {
       setState(() {
         nama = result["nama"] ?? nama;
-        email =
-            result["email"] ?? email;
+        email = result["email"] ?? email;
         bio = result["bio"] ?? bio;
         hobi = result["hobi"] ?? hobi;
-        fotoPath =
-            result["fotoPath"] ??
-                fotoPath;
+        fotoPath = result["fotoPath"] ?? fotoPath;
       });
     }
   }
 
+  Widget _profileMenu(IconData icon, String title, [String? subtitle]) {
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+
+      leading: Container(
+        width: 42,
+        height: 42,
+        decoration: BoxDecoration(
+          color: const Color(0xFF2F80ED).withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(icon, color: const Color(0xFF2F80ED)),
+      ),
+
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
+
+      subtitle: subtitle != null && subtitle.isNotEmpty ? Text(subtitle) : null,
+
+      trailing: const Icon(Icons.chevron_right),
+
+      onTap: () {},
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Colors.white,
-            Color(0xFF5FB9E3),
-          ],
+    return Scaffold(
+      backgroundColor: const Color(0xFFF5F7FB),
+
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        title: const Text(
+          "Profil",
+          style: TextStyle(
+            color: Color(0xFF1B2A57),
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
 
-      child: Scaffold(
-        backgroundColor:
-            Colors.transparent,
-
-        appBar: AppBar(
-          backgroundColor:
-              Colors.transparent,
-          elevation: 0,
-
-          automaticallyImplyLeading:
-              false,
-
-          centerTitle: true,
-
-          title: const Text(
-            "Profil",
-            style: TextStyle(
-              color: Colors.blue,
-              fontWeight:
-                  FontWeight.bold,
-            ),
-          ),
-        ),
-
-        body: SafeArea(
-          child: SingleChildScrollView(
-            padding:
-                const EdgeInsets.all(
-              24,
-            ),
-
-            child: Column(
-              children: [
-                CircleAvatar(
-                  radius: 45,
-                  backgroundImage:
-                      _buildFoto(),
-                ),
-
-                const SizedBox(
-                  height: 12,
-                ),
-
-                Text(
-                  nama.isEmpty
-                      ? "Belum ada nama"
-                      : nama,
-
-                  style:
-                      const TextStyle(
-                    color: Colors.blue,
-                    fontSize: 18,
-                    fontWeight:
-                        FontWeight.bold,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              // HEADER PROFIL
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF4F8EF7), Color(0xFF2F80ED)],
                   ),
                 ),
 
-                TextButton(
-                  onPressed:
-                      _editProfil,
+                child: Row(
+                  children: [
+                    CircleAvatar(radius: 35, backgroundImage: _buildFoto()),
 
-                  child: const Text(
-                    "Edit profil",
-                    style: TextStyle(
-                      color:
-                          Colors.blue,
-                      fontWeight:
-                          FontWeight
-                              .bold,
+                    const SizedBox(width: 14),
+
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            nama.isEmpty ? "Belum Ada Nama" : nama,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+
+                          const SizedBox(height: 4),
+
+                          Text(
+                            email.isEmpty ? "-" : email,
+                            style: const TextStyle(color: Colors.white70),
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          SizedBox(
+                            height: 34,
+                            child: ElevatedButton.icon(
+                              onPressed: _editProfil,
+
+                              icon: const Icon(Icons.edit, size: 16),
+
+                              label: const Text("Edit Profil"),
+
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+
+                                foregroundColor: const Color(0xFF2F80ED),
+
+                                elevation: 0,
+
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
+              ),
 
-                const SizedBox(
-                  height: 16,
-                ),
+              const SizedBox(height: 20),
 
-                Container(
-                  width: double.infinity,
-
-                  padding:
-                      const EdgeInsets.all(
-                    24,
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
                   ),
 
-                  decoration:
-                      BoxDecoration(
-                    color: const Color(
-                      0xFF5FB9E3,
-                    ),
-
-                    borderRadius:
-                        BorderRadius.circular(
-                      28,
-                    ),
-                  ),
-
-                  child: Column(
+                  child: ListView(
                     children: [
-                      _buildItem(
-                        "Username",
-                        nama,
-                      ),
+                      const SizedBox(height: 8),
 
-                      _buildItem(
-                        "Email",
-                        email,
-                      ),
+                      _profileMenu(Icons.person_outline, "Bio", bio),
 
-                      _buildItem(
-                        "Bio",
-                        bio,
-                      ),
+                      _profileMenu(Icons.favorite_border, "Hobi", hobi),
 
-                      _buildItem(
-                        "Hobi",
-                        hobi,
-                      ),
+                      _profileMenu(Icons.lock_outline, "Keamanan"),
 
-                      const SizedBox(
-                        height: 20,
-                      ),
+                      _profileMenu(Icons.notifications_none, "Notifikasi"),
 
-                      ElevatedButton(
-                        onPressed: () {
+                      _profileMenu(Icons.palette_outlined, "Tema", "Terang"),
+
+                      _profileMenu(Icons.backup_outlined, "Backup & Restore"),
+
+                      _profileMenu(Icons.info_outline, "Tentang Aplikasi"),
+
+                      const Divider(),
+
+                      ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                        ),
+
+                        leading: Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: Colors.red.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.logout, color: Colors.red),
+                        ),
+
+                        title: const Text(
+                          "Keluar",
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+
+                        trailing: const Icon(Icons.chevron_right),
+
+                        onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder:
-                                  (_) =>
-                                      const KeluarPage(),
+                              builder: (_) => const KeluarPage(),
                             ),
                           );
                         },
-
-                        style:
-                            ElevatedButton.styleFrom(
-                          backgroundColor:
-                              Colors.white,
-
-                          shape:
-                              RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(
-                              30,
-                            ),
-                          ),
-
-                          padding:
-                              const EdgeInsets.symmetric(
-                            horizontal:
-                                40,
-                            vertical:
-                                12,
-                          ),
-                        ),
-
-                        child: const Text(
-                          "Keluar akun",
-
-                          style:
-                              TextStyle(
-                            color: Color(
-                              0xFF5FB9E3,
-                            ),
-                            fontSize: 16,
-                          ),
-                        ),
                       ),
+
+                      const SizedBox(height: 10),
                     ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

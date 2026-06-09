@@ -24,17 +24,13 @@ class EditPage extends StatefulWidget {
 }
 
 class _EditPageState extends State<EditPage> {
-  final TextEditingController _namaC =
-      TextEditingController();
+  final TextEditingController _namaC = TextEditingController();
 
-  final TextEditingController _emailC =
-      TextEditingController();
+  final TextEditingController _emailC = TextEditingController();
 
-  final TextEditingController _bioC =
-      TextEditingController();
+  final TextEditingController _bioC = TextEditingController();
 
-  final TextEditingController _hobiC =
-      TextEditingController();
+  final TextEditingController _hobiC = TextEditingController();
 
   String? fotoPath;
 
@@ -62,8 +58,7 @@ class _EditPageState extends State<EditPage> {
   }
 
   Future<void> _editFoto() async {
-    final XFile? picked =
-        await _picker.pickImage(
+    final XFile? picked = await _picker.pickImage(
       source: ImageSource.gallery,
       maxWidth: 1024,
       maxHeight: 1024,
@@ -78,17 +73,10 @@ class _EditPageState extends State<EditPage> {
   }
 
   Future<void> _simpan() async {
-    if (_namaC.text.trim().isEmpty ||
-        _emailC.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Nama dan email wajib diisi',
-          ),
-        ),
+    if (_namaC.text.trim().isEmpty || _emailC.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Nama dan email wajib diisi')),
       );
-
       return;
     }
 
@@ -113,47 +101,41 @@ class _EditPageState extends State<EditPage> {
     if (fotoPath != null &&
         fotoPath!.isNotEmpty &&
         !fotoPath!.contains('assets/')) {
-      return FileImage(
-        File(fotoPath!),
-      );
+      return FileImage(File(fotoPath!));
     }
 
-    return const AssetImage(
-      "assets/images/profil.png",
-    );
+    return const AssetImage("assets/images/profil.png");
   }
 
-  Widget _buildLabel(String text) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Text(
-        text,
-        style: const TextStyle(
-          color: Colors.blue,
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildField(
-    TextEditingController controller, {
+  Widget _modernField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
     int maxLines = 1,
-    TextInputType keyboardType =
-        TextInputType.text,
+    TextInputType keyboardType = TextInputType.text,
   }) {
     return TextField(
       controller: controller,
       maxLines: maxLines,
       keyboardType: keyboardType,
       decoration: InputDecoration(
+        labelText: label,
+
+        prefixIcon: Icon(icon, color: const Color(0xFF2F80ED)),
+
         filled: true,
         fillColor: Colors.white,
-        border: OutlineInputBorder(
-          borderRadius:
-              BorderRadius.circular(12),
-          borderSide: BorderSide.none,
+
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+
+        focusedBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(14)),
+          borderSide: BorderSide(color: Color(0xFF2F80ED), width: 2),
         ),
       ),
     );
@@ -161,144 +143,171 @@ class _EditPageState extends State<EditPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        resizeToAvoidBottomInset: true,
+    return Scaffold(
+      backgroundColor: const Color(0xFFF5F7FB),
 
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
 
-          leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.blue,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-
-          centerTitle: false,
-
-          title: const Text(
-            "Edit profil",
-            style: TextStyle(
-              color: Colors.blue,
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
-          ),
-
-          actions: [
-            IconButton(
-              icon: const Icon(
-                Icons.check,
-                color: Colors.blue,
-              ),
-              onPressed: _simpan,
-            ),
-          ],
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF1B2A57)),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
 
-        body: SingleChildScrollView(
-          child: Container(
-            constraints: BoxConstraints(
-              minHeight:
-                  MediaQuery.of(context)
-                      .size
-                      .height,
-            ),
+        title: const Text(
+          "Edit Profil",
+          style: TextStyle(
+            color: Color(0xFF1B2A57),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
 
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.white,
-                  Color(0xFF5FB9E3),
-                ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+
+          child: Column(
+            children: [
+              // HEADER BIRU
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF4F8EF7), Color(0xFF2F80ED)],
+                  ),
+                ),
+
+                child: Column(
+                  children: [
+                    GestureDetector(
+                      onTap: _editFoto,
+
+                      child: Stack(
+                        children: [
+                          CircleAvatar(
+                            radius: 50,
+                            backgroundImage: _buildFotoImage(),
+                          ),
+
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                              ),
+
+                              child: const Icon(
+                                Icons.camera_alt,
+                                size: 18,
+                                color: Color(0xFF2F80ED),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    const Text(
+                      "Ketuk foto untuk mengganti",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ],
+                ),
               ),
-            ),
 
-            child: Padding(
-              padding: EdgeInsets.only(
-                left: 24,
-                right: 24,
-                top: 24,
-                bottom:
-                    MediaQuery.of(context)
-                        .viewInsets
-                        .bottom +
-                    24,
-              ),
+              const SizedBox(height: 20),
 
-              child: Column(
-                children: [
-                  GestureDetector(
-                    onTap: _editFoto,
+              // FORM
+              Container(
+                padding: const EdgeInsets.all(20),
 
-                    child: Column(
-                      children: [
-                        CircleAvatar(
-                          radius: 50,
-                          backgroundImage:
-                              _buildFotoImage(),
-                        ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
 
-                        const SizedBox(
-                          height: 8,
-                        ),
+                  borderRadius: BorderRadius.circular(20),
+                ),
 
-                        const Text(
-                          'Ubah foto',
-                          style: TextStyle(
-                            color: Colors.blue,
-                            fontWeight:
-                                FontWeight.bold,
+                child: Column(
+                  children: [
+                    _modernField(
+                      controller: _namaC,
+                      label: "Nama",
+                      icon: Icons.person_outline,
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    _modernField(
+                      controller: _emailC,
+                      label: "Email",
+                      icon: Icons.email_outlined,
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    _modernField(
+                      controller: _bioC,
+                      label: "Bio",
+                      icon: Icons.article_outlined,
+                      maxLines: 3,
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    _modernField(
+                      controller: _hobiC,
+                      label: "Hobi",
+                      icon: Icons.favorite_border,
+                      maxLines: 3,
+                    ),
+
+                    const SizedBox(height: 30),
+
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+
+                      child: ElevatedButton(
+                        onPressed: _simpan,
+
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF2F80ED),
+
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
                           ),
                         ),
-                      ],
+
+                        child: const Text(
+                          "Simpan Perubahan",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  _buildLabel('Username'),
-
-                  _buildField(_namaC),
-
-                  const SizedBox(height: 16),
-
-                  _buildLabel('Email'),
-
-                  _buildField(
-                    _emailC,
-                    keyboardType:
-                        TextInputType
-                            .emailAddress,
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  _buildLabel('Bio'),
-
-                  _buildField(
-                    _bioC,
-                    maxLines: 2,
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  _buildLabel('Hobi'),
-
-                  _buildField(
-                    _hobiC,
-                    maxLines: 2,
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),
