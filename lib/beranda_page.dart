@@ -1,12 +1,14 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:app_3a_02/utils/user_prefs.dart';
 import 'package:app_3a_02/buat_page.dart';
 import 'package:app_3a_02/diary1_page.dart';
-import 'package:flutter/material.dart';
 import 'package:app_3a_02/database/db_helper.dart';
 import 'package:app_3a_02/models/diaryitem_page.dart';
 import 'package:app_3a_02/profil_page.dart';
 import 'package:app_3a_02/suka_page.dart';
 import 'package:app_3a_02/perpustakaan_page.dart';
+import 'package:app_3a_02/login_page.dart';
 
 class BerandaPage extends StatefulWidget {
   const BerandaPage({super.key});
@@ -20,6 +22,8 @@ class _BerandaPageState extends State<BerandaPage> {
 
   int totalDiary = 0;
   int totalFavorite = 0;
+  String nama = "";
+  String email = "";
 
   @override
   void initState() {
@@ -29,17 +33,265 @@ class _BerandaPageState extends State<BerandaPage> {
 
   Future<void> loadData() async {
     final data = await DBHelper.instance.getAllDiary();
+    final profile = await UserPrefs.getProfile();
+
+    if(!mounted) return;
 
     setState(() {
       diaries = data;
       totalDiary = data.length;
       totalFavorite = data.where((e) => e.isFavorite == 1).length;
+
+      nama = profile["nama"] ?? "";
+      email = profile["email"] ?? "";
     });
   }
+
+  void _showNotifications() async {
+  final allDiary = await DBHelper.instance.getAllDiary();
+  final favoriteDiary = await DBHelper.instance.getFavoriteDiary();
+
+  List<Map<String, String>> notifications = [];
+
+  // Belum punya favorit
+  if (favoriteDiary.isEmpty) {
+    notifications.add({
+      "icon": "⭐",
+      "title": "Belum punya favorit",
+      "subtitle":
+          "Tandai diary penting sebagai favorit agar mudah ditemukan.",
+    });
+  }
+
+  // Belum menulis hari ini
+  final now = DateTime.now();
+
+  final today =
+      "${now.day}/${now.month}/${now.year}";
+
+  final sudahMenulisHariIni = allDiary.any(
+    (e) => e.tanggal == today,
+  );
+
+  if (!sudahMenulisHariIni) {
+    notifications.add({
+      "icon": "📝",
+      "title": "Belum menulis hari ini",
+      "subtitle": "Kamu belum menulis diary hari ini.",
+    });
+  }
+
+  // Diary baru (informasi jumlah diary)
+  notifications.add({
+    "icon": "🎉",
+    "title": "Diary Tersimpan",
+    "subtitle":
+        "Saat ini kamu memiliki ${allDiary.length} diary.",
+  });
+
+  // Hari beruntun (sementara dihitung dari jumlah tanggal unik)
+  final hariBeruntun =
+      allDiary.map((e) => e.tanggal).toSet().length;
+
+  if (hariBeruntun > 1) {
+    notifications.add({
+      "icon": "🔥",
+      "title": "Hari Beruntun",
+      "subtitle":
+          "Selamat! Hari beruntun menjadi $hariBeruntun hari.",
+    });
+  }
+
+  showModalBottomSheet(
+    context: context,
+    showDragHandle: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(20),
+      ),
+    ),
+    builder: (context) {
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: notifications.isEmpty
+            ? const Center(
+                child: Text(
+                  "Tidak ada notifikasi",
+                ),
+              )
+            : ListView.separated(
+                shrinkWrap: true,
+                itemCount: notifications.length,
+                separatorBuilder: (_, __) =>
+                    const Divider(),
+                itemBuilder: (context, index) {
+                  final item = notifications[index];
+
+                  return ListTile(
+                    leading: Text(
+                      item["icon"]!,
+                      style:
+                          const TextStyle(fontSize: 28),
+                    ),
+                    title: Text(
+                      item["title"]!,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: Text(
+                      item["subtitle"]!,
+                    ),
+                  );
+                },
+              ),
+      );
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(
+        child: Column(
+          children: [
+            UserAccountsDrawerHeader(
+              decoration: const BoxDecoration(
+                color: Color(0xFF2F80ED),
+              ),
+              currentAccountPicture: const CircleAvatar(
+                child: Icon(
+                  Icons.person,
+                  size: 40,
+                ),
+              ),
+              accountName: Text(
+                nama.isEmpty ? "Pengguna" : nama,
+              ),
+              accountEmail: Text(
+                email.isEmpty ? "-" : email,
+              ),
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.home),
+              title: const Text("Beranda"),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.menu_book),
+              title: const Text("Perpustakaan"),
+              onTap: () async {
+                Navigator.pop(context);
+
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const PerpustakaanPage(),
+                  ),
+                );
+
+                loadData();
+              },
+            ),
+
+            ListTile(
+              leading: const Icon(
+                Icons.star,
+              ),
+              title: const Text("Favorit"),
+              onTap: () async {
+                Navigator.pop(context);
+
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const SukaPage(),
+                  ),
+                );
+
+                loadData();
+              },
+            ),
+
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text("Profil"),
+              onTap: () async {
+                Navigator.pop(context);
+
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ProfilPage(),
+                  ),
+                );
+
+                loadData();
+              },
+            ),
+
+            const Divider(),
+
+            ListTile(
+              leading: const Icon(
+                Icons.logout,
+                color: Colors.red,
+              ),
+              title: const Text(
+                "Logout",
+                style: TextStyle(color: Colors.red),
+              ),
+              onTap: () async {
+                Navigator.pop(context); // Menutup Drawer
+
+                final confirm = await showDialog<bool>(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text("Logout"),
+                      content: const Text(
+                        "Apakah Anda yakin ingin keluar dari akun ini?",
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context, false);
+                          },
+                          child: const Text("Batal"),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context, true);
+                          },
+                          child: const Text(
+                            "Logout",
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+
+                if (confirm == true) {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const LoginPage(),
+                    ),
+                    (route) => false,
+                  );
+                }
+              },
+            ),
+          ],
+        ),
+      ),
       backgroundColor: const Color(0xFFF7F9FC),
       body: SafeArea(
         child: Column(
@@ -80,6 +332,13 @@ class _BerandaPageState extends State<BerandaPage> {
 
           if (result == true) {
             loadData();
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Diary baru berhasil disimpan"),
+                duration: Duration(seconds: 2),
+                ),
+            );
           }
         },
         child: const Icon(Icons.add, color: Colors.white),
@@ -94,7 +353,16 @@ class _BerandaPageState extends State<BerandaPage> {
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          const Icon(Icons.menu),
+          Builder(
+            builder: (context) {
+              return IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+              );
+            },
+          ),
           const Spacer(),
           const Text(
             "Beranda",
@@ -102,7 +370,12 @@ class _BerandaPageState extends State<BerandaPage> {
           ),
 
           const Spacer(),
-          const Icon(Icons.notifications_none),
+          IconButton(
+            icon: const Icon(Icons.notifications_none),
+            onPressed: (){
+              _showNotifications();
+            },
+          ),
         ],
       ),
     );
@@ -127,12 +400,12 @@ class _BerandaPageState extends State<BerandaPage> {
               children: [
                 Text(
                   "Halo 👋",
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 SizedBox(height: 8),
                 Text(
                   "Apa kabar hari ini?",
-                  style: TextStyle(color: Colors.white70),
+                  style: TextStyle(color: Colors.white),
                 ),
               ],
             ),
@@ -238,7 +511,7 @@ class _BerandaPageState extends State<BerandaPage> {
         return Container(
           margin: const EdgeInsets.only(bottom: 10),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Color(0xFF4A90E2),
             borderRadius: BorderRadius.circular(15),
           ),
 
@@ -269,12 +542,22 @@ class _BerandaPageState extends State<BerandaPage> {
                     ),
             ),
 
-            title: Text(item.judul),
+            title: Text(item.judul,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
 
             subtitle: Text(
               item.isi,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+              ),
             ),
 
             trailing: Icon(
