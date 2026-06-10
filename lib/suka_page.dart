@@ -64,7 +64,7 @@ class _SukaPageState extends State<SukaPage> {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           decoration: BoxDecoration(
-            color: const Color(0xFF5FB9E3),
+            color: const Color(0xFF2F80ED),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Row(
@@ -97,8 +97,8 @@ class _SukaPageState extends State<SukaPage> {
                   await _toggleFavorite(item);
                 },
                 icon: Icon(
-                  item.isFavorite == 1 ? Icons.favorite : Icons.favorite_border,
-                  color: Colors.pink,
+                  item.isFavorite == 1 ? Icons.star : Icons.star_border,
+                  color: Colors.amber,
                 ),
               ),
             ],
@@ -111,50 +111,48 @@ class _SukaPageState extends State<SukaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white,
+
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
+        automaticallyImplyLeading: false,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        title: const Text("Suka"),
+        title: const Text(
+          "Suka",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
         centerTitle: true,
       ),
 
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.white, Color(0xFF5FB9E3)],
-          ),
-        ),
-
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-
-          child: _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : _favorit.isEmpty
-              ? const Center(
-                  child: Text(
-                    'Belum ada diary favorit',
-                    style: TextStyle(color: Colors.blueGrey, fontSize: 16),
+      body: Padding(
+        padding: const EdgeInsets.all(24),
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _favorit.isEmpty
+                ? const Center(
+                    child: Text(
+                      'Belum ada diary favorit',
+                      style: TextStyle(
+                        color: Colors.blueGrey,
+                        fontSize: 16,
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: _favorit.length,
+                    itemBuilder: (context, index) {
+                      final item = _favorit[index];
+                      return _buildCard(item);
+                    },
                   ),
-                )
-              : ListView.builder(
-                  itemCount: _favorit.length,
-                  itemBuilder: (context, index) {
-                    final item = _favorit[index];
-
-                    return _buildCard(item);
-                  },
-                ),
-        ),
       ),
     );
   }

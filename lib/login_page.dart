@@ -200,11 +200,20 @@ class _LoginPageState extends State<LoginPage> {
                               return;
                             }
 
-                            bool isLoginSuccess = await DBHelper.instance
-                                .loginUser(
-                                  emailController.text.trim(),
-                                  passwordController.text.trim(),
-                                );
+                            // Validasi password harus tepat 8 karakter
+                            if (passwordController.text.trim().length != 8) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Password harus tepat 8 karakter"),
+                                ),
+                              );
+                              return;
+                            }
+
+                            bool isLoginSuccess = await DBHelper.instance.loginUser(
+                              emailController.text.trim(),
+                              passwordController.text.trim(),
+                            );
 
                             if (isLoginSuccess) {
                               Navigator.push(

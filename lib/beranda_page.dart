@@ -1,13 +1,12 @@
 import 'dart:io';
-
 import 'package:app_3a_02/buat_page.dart';
 import 'package:app_3a_02/diary1_page.dart';
 import 'package:flutter/material.dart';
 import 'package:app_3a_02/database/db_helper.dart';
 import 'package:app_3a_02/models/diaryitem_page.dart';
-import 'package:app_3a_02/diary1_page.dart';
 import 'package:app_3a_02/profil_page.dart';
 import 'package:app_3a_02/suka_page.dart';
+import 'package:app_3a_02/perpustakaan_page.dart';
 
 class BerandaPage extends StatefulWidget {
   const BerandaPage({super.key});
@@ -148,11 +147,30 @@ class _BerandaPageState extends State<BerandaPage> {
   Widget buildStatistics() {
     return Row(
       children: [
-        Expanded(child: statCard(totalDiary.toString(), "Total Diary")),
+        Expanded(
+          child: statCard(
+            totalDiary.toString(),
+            "Total Diary",
+          ),
+        ),
+
         const SizedBox(width: 10),
-        Expanded(child: statCard("12", "Hari Beruntun")),
+
+        Expanded(
+          child: statCard(
+            totalDiary.toString(),
+            "Hari Beruntun",
+          ),
+        ),
+
         const SizedBox(width: 10),
-        Expanded(child: statCard(totalFavorite.toString(), "Favorit")),
+
+        Expanded(
+          child: statCard(
+            totalFavorite.toString(),
+            "Favorit",
+          ),
+        ),
       ],
     );
   }
@@ -190,7 +208,19 @@ class _BerandaPageState extends State<BerandaPage> {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const Spacer(),
-        TextButton(onPressed: () {}, child: const Text("Lihat semua")),
+        TextButton(
+          onPressed: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const PerpustakaanPage(),
+              ),
+            );
+
+            loadData();
+          },
+          child: const Text("Lihat semua"),
+        ),
       ],
     );
   }
@@ -223,7 +253,8 @@ class _BerandaPageState extends State<BerandaPage> {
 
             leading: ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: item.imagePath.isNotEmpty
+              child: item.imagePath.isNotEmpty &&
+                      File(item.imagePath).existsSync()
                   ? Image.file(
                       File(item.imagePath),
                       width: 55,
@@ -272,7 +303,9 @@ class _BerandaPageState extends State<BerandaPage> {
 
             // FAVORIT
             IconButton(
-              icon: const Icon(Icons.favorite_border),
+              icon: const Icon(
+                Icons.star_border,
+              ),
               onPressed: () async {
                 await Navigator.push(
                   context,
@@ -288,7 +321,18 @@ class _BerandaPageState extends State<BerandaPage> {
             // DIARY
             IconButton(
               icon: const Icon(Icons.menu_book_outlined),
-              onPressed: () {},
+              onPressed: () async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const PerpustakaanPage(),
+                  ),
+                );
+
+                if (result == true) {
+                  loadData();
+                }
+              },
             ),
 
             // PROFIL

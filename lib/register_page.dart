@@ -28,42 +28,65 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future<void> registerUser() async {
-    if (namaController.text.trim().isEmpty ||
-        emailController.text.trim().isEmpty ||
-        passwordController.text.trim().isEmpty ||
-        confirmPasswordController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Semua field harus diisi")));
-      return;
-    }
-
-    if (passwordController.text != confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Konfirmasi password tidak sesuai")),
-      );
-      return;
-    }
-
-    try {
-      await DBHelper.instance.registerUser(
-        emailController.text.trim(),
-        passwordController.text.trim(),
-      );
-
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Akun berhasil dibuat")));
-
-      Navigator.pop(context);
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Email sudah digunakan")));
-    }
+  if (namaController.text.trim().isEmpty ||
+      emailController.text.trim().isEmpty ||
+      passwordController.text.trim().isEmpty ||
+      confirmPasswordController.text.trim().isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Semua field harus diisi")),
+    );
+    return;
   }
+
+  // Password harus tepat 8 karakter
+  if (passwordController.text.trim().length != 8) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Password harus tepat 8 karakter"),
+      ),
+    );
+    return;
+  }
+
+  // Konfirmasi password harus tepat 8 karakter
+  if (confirmPasswordController.text.trim().length != 8) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Konfirmasi password harus tepat 8 karakter"),
+      ),
+    );
+    return;
+  }
+
+  // Password dan konfirmasi harus sama
+  if (passwordController.text != confirmPasswordController.text) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Konfirmasi password tidak sesuai"),
+      ),
+    );
+    return;
+  }
+
+  try {
+    await DBHelper.instance.registerUser(
+      emailController.text.trim(),
+      passwordController.text.trim(),
+    );
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Akun berhasil dibuat")),
+    );
+
+    Navigator.pop(context);
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Email sudah digunakan")),
+    );
+  }
+}
 
   InputDecoration customInput({
     required String hint,
