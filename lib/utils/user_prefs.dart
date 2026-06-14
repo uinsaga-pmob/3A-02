@@ -16,6 +16,19 @@ class UserPrefs {
   static const String _keyFoto =
       'user_foto';
 
+  static const String _keyCurrentEmail = 
+      'current_email';
+
+  static Future<void> saveCurrentEmail(String email) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyCurrentEmail, email);
+  }
+
+  static Future<String> getCurrentEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keyCurrentEmail) ?? "";
+  } 
+
   static Future<void> saveProfile({
     required String nama,
     required String email,

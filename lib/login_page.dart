@@ -4,6 +4,7 @@ import 'package:app_3a_02/register_page.dart';
 import 'package:app_3a_02/beranda_page.dart';
 import 'package:app_3a_02/reset_page.dart';
 import 'package:app_3a_02/database/db_helper.dart';
+import 'package:app_3a_02/utils/user_prefs.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -216,13 +217,18 @@ class _LoginPageState extends State<LoginPage> {
                             );
 
                             if (isLoginSuccess) {
+                              await UserPrefs.saveCurrentEmail(
+                                emailController.text.trim(),
+                              );
+
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (_) => const BerandaPage(),
                                 ),
                               );
-                            } else {
+                            } 
+                            else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text("Email atau sandi salah"),

@@ -2,6 +2,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:app_3a_02/edit_page.dart';
 import 'package:app_3a_02/keluar_page.dart';
+import 'package:app_3a_02/keamanan_page.dart';
+import 'package:app_3a_02/tema_page.dart';
+import 'package:app_3a_02/backup_restore_page.dart';
+import 'package:app_3a_02/tentang_aplikasi_page.dart';
 import 'package:app_3a_02/utils/user_prefs.dart';
 
 class ProfilPage extends StatefulWidget {
@@ -73,47 +77,63 @@ class _ProfilPageState extends State<ProfilPage> {
     }
   }
 
-  Widget _profileMenu(IconData icon, String title, [String? subtitle]) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-
-      leading: Container(
-        width: 42,
-        height: 42,
-        decoration: BoxDecoration(
-          color: const Color(0xFF2F80ED).withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(icon, color: const Color(0xFF2F80ED)),
+  Widget _profileMenu(
+  IconData icon,
+  String title, [
+  String? subtitle,
+  VoidCallback? onTap,
+]) {
+  return ListTile(
+    contentPadding: const EdgeInsets.symmetric(
+      horizontal: 20,
+      vertical: 4,
+    ),
+    leading: Container(
+      width: 42,
+      height: 42,
+      decoration: BoxDecoration(
+        color: const Color(0xFF2F80ED).withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
       ),
-
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
-
-      subtitle: subtitle != null && subtitle.isNotEmpty ? Text(subtitle) : null,
-
-      trailing: const Icon(Icons.chevron_right),
-
-      onTap: () {},
-    );
-  }
+      child: Icon(
+        icon,
+        color: const Color(0xFF2F80ED),
+      ),
+    ),
+    title: Text(
+      title,
+      style: const TextStyle(fontWeight: FontWeight.w500),
+    ),
+    subtitle: subtitle != null && subtitle.isNotEmpty
+        ? Text(subtitle)
+        : null,
+    trailing: const Icon(Icons.chevron_right),
+    onTap: onTap,
+  );
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FB),
+      backgroundColor: Colors.white,
 
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        centerTitle: true,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
         automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         title: const Text(
           "Profil",
-          style: TextStyle(
-            color: Color(0xFF1B2A57),
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
+        centerTitle: true,
       ),
 
       body: SafeArea(
@@ -202,19 +222,79 @@ class _ProfilPageState extends State<ProfilPage> {
                     children: [
                       const SizedBox(height: 8),
 
-                      _profileMenu(Icons.person_outline, "Bio", bio),
+                      ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 4,
+                        ),
+                        leading: Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF2F80ED).withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            Icons.lock_outline,
+                            color: Color(0xFF2F80ED),
+                          ),
+                        ),
+                        title: const Text(
+                          "Keamanan",
+                          style: TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const KeamananPage(),
+                            ),
+                          );
+                        },
+                      ),
 
-                      _profileMenu(Icons.favorite_border, "Hobi", hobi),
+                      _profileMenu(
+                        Icons.palette_outlined,
+                        "Tema",
+                        "Terang",
+                        () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const TemaPage(),
+                            ),
+                          );
+                        },
+                      ),
 
-                      _profileMenu(Icons.lock_outline, "Keamanan"),
+                      _profileMenu(
+                        Icons.backup_outlined,
+                        "Backup & Restore",
+                        null,
+                        () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const BackupRestorePage(),
+                            ),
+                          );
+                        },
+                      ),
 
-                      _profileMenu(Icons.notifications_none, "Notifikasi"),
-
-                      _profileMenu(Icons.palette_outlined, "Tema", "Terang"),
-
-                      _profileMenu(Icons.backup_outlined, "Backup & Restore"),
-
-                      _profileMenu(Icons.info_outline, "Tentang Aplikasi"),
+                      _profileMenu(
+                        Icons.info_outline,
+                        "Tentang Aplikasi",
+                        null,
+                        () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const TentangAplikasiPage(),
+                            ),
+                          );
+                        },
+                      ),
 
                       const Divider(),
 

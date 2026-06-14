@@ -243,7 +243,7 @@ class _BerandaPageState extends State<BerandaPage> {
                 color: Colors.red,
               ),
               title: const Text(
-                "Logout",
+                "Keluar",
                 style: TextStyle(color: Colors.red),
               ),
               onTap: () async {
@@ -253,7 +253,7 @@ class _BerandaPageState extends State<BerandaPage> {
                   context: context,
                   builder: (context) {
                     return AlertDialog(
-                      title: const Text("Logout"),
+                      title: const Text("Keluar"),
                       content: const Text(
                         "Apakah Anda yakin ingin keluar dari akun ini?",
                       ),
@@ -269,7 +269,7 @@ class _BerandaPageState extends State<BerandaPage> {
                             Navigator.pop(context, true);
                           },
                           child: const Text(
-                            "Logout",
+                            "Keluar",
                             style: TextStyle(color: Colors.red),
                           ),
                         ),

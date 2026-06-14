@@ -1,8 +1,9 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:app_3a_02/database/db_helper.dart';
 import 'package:app_3a_02/models/diaryitem_page.dart';
+import 'package:app_3a_02/edit_diary_page.dart';
+import 'package:share_plus/share_plus.dart';
 
 class Diary1Page extends StatefulWidget {
   final DiaryItem diary;
@@ -44,9 +45,34 @@ class _Diary1PageState
         tanggal: diary.tanggal,
         mood: diary.mood,
         kategori: diary.kategori,
+        imagePath: diary.imagePath,
+        lokasi: diary.lokasi,
         isFavorite: newValue,
       );
     });
+  }
+
+  Future<void> editDiary() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => EditDiaryPage(
+          diary: diary,
+        ),
+      ),
+    );
+
+    if (result == true) {
+      final list = await DBHelper.instance.getAllDiary();
+
+      final updatedDiary = list.firstWhere(
+        (e) => e.id == diary.id,
+      );
+
+      setState(() {
+        diary = updatedDiary;
+      });
+    }
   }
 
   Future<void> deleteDiary() async {
@@ -57,6 +83,21 @@ class _Diary1PageState
     if (!mounted) return;
 
     Navigator.pop(context, true);
+  }
+  
+  void shareDiary() {
+    Share.share(
+      '''
+  ${diary.judul}
+
+  ${diary.isi}
+
+  ${diary.tanggal}
+  Mood : ${diary.mood}
+  Kategori : ${diary.kategori}
+  Lokasi : ${diary.lokasi}
+  ''',
+    );
   }
 
   Widget buildChip(
@@ -140,6 +181,9 @@ class _Diary1PageState
                     width: 55,
                     height: 55,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(Icons.broken_image);
+                    },
                   ),
                 )
                 : Container(
@@ -175,7 +219,7 @@ class _Diary1PageState
                   child: Row(
                     children: [
                       CircleAvatar(
-                        backgroundColor:Colors.white,
+                        backgroundColor:Colors.transparent,
                         child: IconButton(
                           icon: const Icon(
                             Icons.arrow_back,
@@ -183,17 +227,6 @@ class _Diary1PageState
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                        ),
-                      ),
-                      const Spacer(),
-                      CircleAvatar(
-                        backgroundColor:Colors.white,
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.more_vert,
-                            color: Colors.black,
-                          ),
-                          onPressed: () {},
                         ),
                       ),
                     ],
@@ -332,15 +365,7 @@ class _Diary1PageState
               Icons.edit,
               "Edit",
               () {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      "Fitur Edit akan dibuat berikutnya",
-                    ),
-                  ),
-                );
+                editDiary();
               },
             ),
 
@@ -399,15 +424,7 @@ class _Diary1PageState
               Icons.share_outlined,
               "Bagikan",
               () {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      "Fitur Bagikan belum dibuat",
-                    ),
-                  ),
-                );
+                shareDiary();
               },
             ),
           ],

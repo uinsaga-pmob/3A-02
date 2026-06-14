@@ -3,17 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:app_3a_02/database/db_helper.dart';
 import 'package:app_3a_02/models/diaryitem_page.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
 
-class BuatPage extends StatefulWidget {
-  const BuatPage({super.key});
+class EditDiaryPage extends StatefulWidget {
+  final DiaryItem diary;
+
+  const EditDiaryPage({
+    super.key,
+    required this.diary,
+  });
 
   @override
-  State<BuatPage> createState() => _BuatPageState();
+  State<EditDiaryPage> createState() => _EditDiaryPageState();
 }
 
-class _BuatPageState extends State<BuatPage> {
+class _EditDiaryPageState extends State<EditDiaryPage> {
   final TextEditingController judulController =
       TextEditingController();
 
@@ -41,31 +44,47 @@ class _BuatPageState extends State<BuatPage> {
     super.dispose();
   }
 
+  @override
+  void initState() {
+    super.initState();
+
+    judulController.text = widget.diary.judul;
+    isiController.text = widget.diary.isi;
+
+    selectedMood = widget.diary.mood;
+    selectedKategori = widget.diary.kategori;
+    lokasi = widget.diary.lokasi;
+
+    if (widget.diary.imagePath.isNotEmpty) {
+      selectedImage = XFile(widget.diary.imagePath);
+    }
+  }
+
   Future<void> simpanDiary() async {
     if (judulController.text.trim().isEmpty ||
         isiController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-            "Judul dan isi diary wajib diisi",
-          ),
+          content: Text("Judul dan isi diary wajib diisi"),
         ),
       );
       return;
     }
 
-    await DBHelper.instance.insertDiary(
-      DiaryItem(
-        judul: judulController.text.trim(),
-        isi: isiController.text.trim(),
-        tanggal:
-            "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
-        mood: selectedMood,
-        kategori: selectedKategori,
-        imagePath: selectedImage?.path ?? "",
-        lokasi: lokasi,
-      ),
+    final diaryBaru = DiaryItem(
+      id: widget.diary.id,
+      judul: judulController.text.trim(),
+      isi: isiController.text.trim(),
+      tanggal:
+          "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
+      mood: selectedMood,
+      kategori: selectedKategori,
+      imagePath: selectedImage?.path ?? "",
+      lokasi: lokasi,
+      isFavorite: widget.diary.isFavorite,
     );
+
+    await DBHelper.instance.updateDiary(diaryBaru);
 
     if (!mounted) return;
 
@@ -78,16 +97,8 @@ class _BuatPageState extends State<BuatPage> {
     );
 
     if (image != null) {
-      final appDir = await getApplicationDocumentsDirectory();
-
-      final fileName = p.basename(image.path);
-
-      final savedImage = await File(image.path).copy(
-        "${appDir.path}/$fileName",
-      );
-
       setState(() {
-        selectedImage = XFile(savedImage.path);
+        selectedImage = image;
       });
     }
   }
@@ -223,11 +234,12 @@ class _BuatPageState extends State<BuatPage> {
         centerTitle: true,
 
         title: const Text(
-          "Tulis Diary",
+          "Edit Diary",
           style: TextStyle(
             color: Colors.black,
             fontWeight:
                 FontWeight.bold,
+                fontSize: 18,
           ),
         ),
 
@@ -240,6 +252,7 @@ class _BuatPageState extends State<BuatPage> {
                 color: Color(0xFF2F80ED),
                 fontWeight:
                     FontWeight.bold,
+                    fontSize: 16,
               ),
             ),
           ),

@@ -183,4 +183,35 @@ class DBHelper {
 
     return result > 0;
   }
+
+  Future<bool> checkPassword(
+    String email,
+    String password,
+  ) async {
+    final database = await db;
+
+    final result = await database.query(
+      "users",
+      where: "email = ? AND password = ?",
+      whereArgs: [email, password],
+    );
+
+    return result.isNotEmpty;
+  }
+
+  Future<void> updatePassword(
+    String email,
+    String newPassword,
+  ) async {
+    final database = await db;
+
+    await database.update(
+      "users",
+      {
+        "password": newPassword,
+      },
+      where: "email = ?",
+      whereArgs: [email],
+    );
+  }
 }

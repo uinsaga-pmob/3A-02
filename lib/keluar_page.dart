@@ -10,20 +10,8 @@ class KeluarPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Colors.white,
-                Color(0xFF5FB9E3),
-              ],
-            ),
-          ),
-          child: Center(
+        backgroundColor: Colors.white,
+        body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -51,7 +39,7 @@ class KeluarPage extends StatelessWidget {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
+                        backgroundColor: Colors.blue,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 24,
                           vertical: 10,
@@ -63,7 +51,7 @@ class KeluarPage extends StatelessWidget {
                       child: const Text(
                         "Ya",
                         style: TextStyle(
-                          color: Colors.blue,
+                          color: Colors.white,
                           fontSize: 16,
                         ),
                       ),
@@ -74,7 +62,7 @@ class KeluarPage extends StatelessWidget {
                         Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
+                        backgroundColor: Colors.blue,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 24,
                           vertical: 10,
@@ -86,7 +74,7 @@ class KeluarPage extends StatelessWidget {
                       child: const Text(
                         "Tidak",
                         style: TextStyle(
-                          color: Colors.blue,
+                          color: Colors.white,
                           fontSize: 16,
                         ),
                       ),
@@ -97,7 +85,6 @@ class KeluarPage extends StatelessWidget {
             ),
           ),
         ),
-      ),
     );
   }
 }
