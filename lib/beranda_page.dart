@@ -22,8 +22,42 @@ class _BerandaPageState extends State<BerandaPage> {
 
   int totalDiary = 0;
   int totalFavorite = 0;
+  int hariBeruntun = 0;
   String nama = "";
   String email = "";
+  String fotoPath = "";
+
+  int hitungHariBeruntun(List<DiaryItem> diaries) {
+    if (diaries.isEmpty) return 0;
+
+    // Ambil tanggal unik
+    final dates = diaries
+        .map((e) {
+          final p = e.tanggal.split('/');
+          return DateTime(
+            int.parse(p[2]),
+            int.parse(p[1]),
+            int.parse(p[0]),
+          );
+        })
+        .toSet()
+        .toList();
+
+    // Urutkan dari lama ke baru
+    dates.sort();
+
+    // Cek apakah ada hari yang terlewat
+    for (int i = 1; i < dates.length; i++) {
+      final selisih = dates[i].difference(dates[i - 1]).inDays;
+
+      if (selisih != 1) {
+        return 0;
+      }
+    }
+
+    // Semua tanggal berurutan
+    return dates.length;
+  }
 
   @override
   void initState() {
@@ -41,9 +75,11 @@ class _BerandaPageState extends State<BerandaPage> {
       diaries = data;
       totalDiary = data.length;
       totalFavorite = data.where((e) => e.isFavorite == 1).length;
+      hariBeruntun = hitungHariBeruntun(data);
 
       nama = profile["nama"] ?? "";
       email = profile["email"] ?? "";
+      fotoPath = profile["foto"] ?? "";
     });
   }
 
@@ -101,6 +137,7 @@ class _BerandaPageState extends State<BerandaPage> {
           "Selamat! Hari beruntun menjadi $hariBeruntun hari.",
     });
   }
+
 
   showModalBottomSheet(
     context: context,
@@ -160,11 +197,11 @@ class _BerandaPageState extends State<BerandaPage> {
               decoration: const BoxDecoration(
                 color: Color(0xFF2F80ED),
               ),
-              currentAccountPicture: const CircleAvatar(
-                child: Icon(
-                  Icons.person,
-                  size: 40,
-                ),
+              currentAccountPicture: CircleAvatar(
+                backgroundImage: fotoPath.isNotEmpty
+                    ? FileImage(File(fotoPath))
+                    : const AssetImage("assets/images/profil.png")
+                        as ImageProvider,
               ),
               accountName: Text(
                 nama.isEmpty ? "Pengguna" : nama,
@@ -231,7 +268,7 @@ class _BerandaPageState extends State<BerandaPage> {
                   ),
                 );
 
-                loadData();
+                await loadData();
               },
             ),
 
@@ -431,7 +468,7 @@ class _BerandaPageState extends State<BerandaPage> {
 
         Expanded(
           child: statCard(
-            totalDiary.toString(),
+            hariBeruntun.toString(),
             "Hari Beruntun",
           ),
         ),
