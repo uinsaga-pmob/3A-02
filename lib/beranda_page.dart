@@ -34,11 +34,7 @@ class _BerandaPageState extends State<BerandaPage> {
     final dates = diaries
         .map((e) {
           final p = e.tanggal.split('/');
-          return DateTime(
-            int.parse(p[2]),
-            int.parse(p[1]),
-            int.parse(p[0]),
-          );
+          return DateTime(int.parse(p[2]), int.parse(p[1]), int.parse(p[0]));
         })
         .toSet()
         .toList();
@@ -69,7 +65,7 @@ class _BerandaPageState extends State<BerandaPage> {
     final data = await DBHelper.instance.getAllDiary();
     final profile = await UserPrefs.getProfile();
 
-    if(!mounted) return;
+    if (!mounted) return;
 
     setState(() {
       diaries = data;
@@ -84,108 +80,90 @@ class _BerandaPageState extends State<BerandaPage> {
   }
 
   void _showNotifications() async {
-  final allDiary = await DBHelper.instance.getAllDiary();
-  final favoriteDiary = await DBHelper.instance.getFavoriteDiary();
+    final allDiary = await DBHelper.instance.getAllDiary();
+    final favoriteDiary = await DBHelper.instance.getFavoriteDiary();
 
-  List<Map<String, String>> notifications = [];
+    List<Map<String, String>> notifications = [];
 
-  // Belum punya favorit
-  if (favoriteDiary.isEmpty) {
+    // Belum punya favorit
+    if (favoriteDiary.isEmpty) {
+      notifications.add({
+        "icon": "⭐",
+        "title": "Belum punya favorit",
+        "subtitle":
+            "Tandai diary penting sebagai favorit agar mudah ditemukan.",
+      });
+    }
+
+    // Belum menulis hari ini
+    final now = DateTime.now();
+
+    final today = "${now.day}/${now.month}/${now.year}";
+
+    final sudahMenulisHariIni = allDiary.any((e) => e.tanggal == today);
+
+    if (!sudahMenulisHariIni) {
+      notifications.add({
+        "icon": "📝",
+        "title": "Belum menulis hari ini",
+        "subtitle": "Kamu belum menulis diary hari ini.",
+      });
+    }
+
+    // Diary baru (informasi jumlah diary)
     notifications.add({
-      "icon": "⭐",
-      "title": "Belum punya favorit",
-      "subtitle":
-          "Tandai diary penting sebagai favorit agar mudah ditemukan.",
+      "icon": "🎉",
+      "title": "Diary Tersimpan",
+      "subtitle": "Saat ini kamu memiliki ${allDiary.length} diary.",
     });
-  }
 
-  // Belum menulis hari ini
-  final now = DateTime.now();
+    // Hari beruntun (sementara dihitung dari jumlah tanggal unik)
+    // Hari beruntun
+    final hariBeruntun = hitungHariBeruntun(allDiary);
 
-  final today =
-      "${now.day}/${now.month}/${now.year}";
+    if (hariBeruntun > 1) {
+      notifications.add({
+        "icon": "🔥",
+        "title": "Hari Beruntun",
+        "subtitle": "Selamat! Hari beruntun menjadi $hariBeruntun hari.",
+      });
+    }
 
-  final sudahMenulisHariIni = allDiary.any(
-    (e) => e.tanggal == today,
-  );
-
-  if (!sudahMenulisHariIni) {
-    notifications.add({
-      "icon": "📝",
-      "title": "Belum menulis hari ini",
-      "subtitle": "Kamu belum menulis diary hari ini.",
-    });
-  }
-
-  // Diary baru (informasi jumlah diary)
-  notifications.add({
-    "icon": "🎉",
-    "title": "Diary Tersimpan",
-    "subtitle":
-        "Saat ini kamu memiliki ${allDiary.length} diary.",
-  });
-
-  // Hari beruntun (sementara dihitung dari jumlah tanggal unik)
-  final hariBeruntun =
-      allDiary.map((e) => e.tanggal).toSet().length;
-
-  if (hariBeruntun > 1) {
-    notifications.add({
-      "icon": "🔥",
-      "title": "Hari Beruntun",
-      "subtitle":
-          "Selamat! Hari beruntun menjadi $hariBeruntun hari.",
-    });
-  }
-
-
-  showModalBottomSheet(
-    context: context,
-    showDragHandle: true,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(
-        top: Radius.circular(20),
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-    ),
-    builder: (context) {
-      return Padding(
-        padding: const EdgeInsets.all(16),
-        child: notifications.isEmpty
-            ? const Center(
-                child: Text(
-                  "Tidak ada notifikasi",
-                ),
-              )
-            : ListView.separated(
-                shrinkWrap: true,
-                itemCount: notifications.length,
-                separatorBuilder: (_, __) =>
-                    const Divider(),
-                itemBuilder: (context, index) {
-                  final item = notifications[index];
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: notifications.isEmpty
+              ? const Center(child: Text("Tidak ada notifikasi"))
+              : ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: notifications.length,
+                  separatorBuilder: (_, __) => const Divider(),
+                  itemBuilder: (context, index) {
+                    final item = notifications[index];
 
-                  return ListTile(
-                    leading: Text(
-                      item["icon"]!,
-                      style:
-                          const TextStyle(fontSize: 28),
-                    ),
-                    title: Text(
-                      item["title"]!,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
+                    return ListTile(
+                      leading: Text(
+                        item["icon"]!,
+                        style: const TextStyle(fontSize: 28),
                       ),
-                    ),
-                    subtitle: Text(
-                      item["subtitle"]!,
-                    ),
-                  );
-                },
-              ),
-      );
-    },
-  );
-}
+                      title: Text(
+                        item["title"]!,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(item["subtitle"]!),
+                    );
+                  },
+                ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -194,21 +172,15 @@ class _BerandaPageState extends State<BerandaPage> {
         child: Column(
           children: [
             UserAccountsDrawerHeader(
-              decoration: const BoxDecoration(
-                color: Color(0xFF2F80ED),
-              ),
+              decoration: const BoxDecoration(color: Color(0xFF2F80ED)),
               currentAccountPicture: CircleAvatar(
                 backgroundImage: fotoPath.isNotEmpty
                     ? FileImage(File(fotoPath))
                     : const AssetImage("assets/images/profil.png")
-                        as ImageProvider,
+                          as ImageProvider,
               ),
-              accountName: Text(
-                nama.isEmpty ? "Pengguna" : nama,
-              ),
-              accountEmail: Text(
-                email.isEmpty ? "-" : email,
-              ),
+              accountName: Text(nama.isEmpty ? "Pengguna" : nama),
+              accountEmail: Text(email.isEmpty ? "-" : email),
             ),
 
             ListTile(
@@ -227,9 +199,7 @@ class _BerandaPageState extends State<BerandaPage> {
 
                 await Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => const PerpustakaanPage(),
-                  ),
+                  MaterialPageRoute(builder: (_) => const PerpustakaanPage()),
                 );
 
                 loadData();
@@ -237,18 +207,14 @@ class _BerandaPageState extends State<BerandaPage> {
             ),
 
             ListTile(
-              leading: const Icon(
-                Icons.star,
-              ),
+              leading: const Icon(Icons.star),
               title: const Text("Favorit"),
               onTap: () async {
                 Navigator.pop(context);
 
                 await Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => const SukaPage(),
-                  ),
+                  MaterialPageRoute(builder: (_) => const SukaPage()),
                 );
 
                 loadData();
@@ -263,9 +229,7 @@ class _BerandaPageState extends State<BerandaPage> {
 
                 await Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => const ProfilPage(),
-                  ),
+                  MaterialPageRoute(builder: (_) => const ProfilPage()),
                 );
 
                 await loadData();
@@ -275,14 +239,8 @@ class _BerandaPageState extends State<BerandaPage> {
             const Divider(),
 
             ListTile(
-              leading: const Icon(
-                Icons.logout,
-                color: Colors.red,
-              ),
-              title: const Text(
-                "Keluar",
-                style: TextStyle(color: Colors.red),
-              ),
+              leading: const Icon(Icons.logout, color: Colors.red),
+              title: const Text("Keluar", style: TextStyle(color: Colors.red)),
               onTap: () async {
                 Navigator.pop(context); // Menutup Drawer
 
@@ -318,9 +276,7 @@ class _BerandaPageState extends State<BerandaPage> {
                 if (confirm == true) {
                   Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => const LoginPage(),
-                    ),
+                    MaterialPageRoute(builder: (_) => const LoginPage()),
                     (route) => false,
                   );
                 }
@@ -374,7 +330,7 @@ class _BerandaPageState extends State<BerandaPage> {
               const SnackBar(
                 content: Text("Diary baru berhasil disimpan"),
                 duration: Duration(seconds: 2),
-                ),
+              ),
             );
           }
         },
@@ -409,7 +365,7 @@ class _BerandaPageState extends State<BerandaPage> {
           const Spacer(),
           IconButton(
             icon: const Icon(Icons.notifications_none),
-            onPressed: (){
+            onPressed: () {
               _showNotifications();
             },
           ),
@@ -437,7 +393,11 @@ class _BerandaPageState extends State<BerandaPage> {
               children: [
                 Text(
                   "Halo 👋",
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
                 ),
                 SizedBox(height: 8),
                 Text(
@@ -457,30 +417,15 @@ class _BerandaPageState extends State<BerandaPage> {
   Widget buildStatistics() {
     return Row(
       children: [
-        Expanded(
-          child: statCard(
-            totalDiary.toString(),
-            "Total Diary",
-          ),
-        ),
+        Expanded(child: statCard(totalDiary.toString(), "Total Diary")),
 
         const SizedBox(width: 10),
 
-        Expanded(
-          child: statCard(
-            hariBeruntun.toString(),
-            "Hari Beruntun",
-          ),
-        ),
+        Expanded(child: statCard(hariBeruntun.toString(), "Hari Beruntun")),
 
         const SizedBox(width: 10),
 
-        Expanded(
-          child: statCard(
-            totalFavorite.toString(),
-            "Favorit",
-          ),
-        ),
+        Expanded(child: statCard(totalFavorite.toString(), "Favorit")),
       ],
     );
   }
@@ -522,9 +467,7 @@ class _BerandaPageState extends State<BerandaPage> {
           onPressed: () async {
             await Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (_) => const PerpustakaanPage(),
-              ),
+              MaterialPageRoute(builder: (_) => const PerpustakaanPage()),
             );
 
             loadData();
@@ -563,8 +506,8 @@ class _BerandaPageState extends State<BerandaPage> {
 
             leading: ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: item.imagePath.isNotEmpty &&
-                      File(item.imagePath).existsSync()
+              child:
+                  item.imagePath.isNotEmpty && File(item.imagePath).existsSync()
                   ? Image.file(
                       File(item.imagePath),
                       width: 55,
@@ -579,7 +522,8 @@ class _BerandaPageState extends State<BerandaPage> {
                     ),
             ),
 
-            title: Text(item.judul,
+            title: Text(
+              item.judul,
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -591,10 +535,7 @@ class _BerandaPageState extends State<BerandaPage> {
               item.isi,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 13,
-              ),
+              style: const TextStyle(color: Colors.white, fontSize: 13),
             ),
 
             trailing: Icon(
@@ -623,9 +564,7 @@ class _BerandaPageState extends State<BerandaPage> {
 
             // FAVORIT
             IconButton(
-              icon: const Icon(
-                Icons.star_border,
-              ),
+              icon: const Icon(Icons.star_border),
               onPressed: () async {
                 await Navigator.push(
                   context,
@@ -644,9 +583,7 @@ class _BerandaPageState extends State<BerandaPage> {
               onPressed: () async {
                 final result = await Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => const PerpustakaanPage(),
-                  ),
+                  MaterialPageRoute(builder: (_) => const PerpustakaanPage()),
                 );
 
                 if (result == true) {
